@@ -46,8 +46,7 @@ isort . # Sort Python imports
 
 ```bash
 # Quick Start
-flask --app store run --debug
+flask run
 
-# Initialize database
-$ flask --app store init-db
+# To verify that the app is running, go to the /status endpoint
 ```
