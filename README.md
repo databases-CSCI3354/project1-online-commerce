@@ -2,6 +2,10 @@
 
 ## Install Poetry
 
+Please follow the official [installation guide](https://python-poetry.org/docs/#installation) to install Poetry.
+
+## Install dependencies
+
 It is recommended to use Python virtual environment, so you don't pollute your system Python environment.
 
 ```bash
