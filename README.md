@@ -18,6 +18,16 @@ poetry install
 eval "$(poetry env activate)"
 ```
 
+## Add dependencies
+
+If you want to add a new dependency, please use `poetry add` command.
+
+For example, to add `python-dotenv` dependency, run:
+
+```bash
+poetry add python-dotenv
+```
+
 ## Set up environment variables
 
 ```bash
@@ -36,8 +46,7 @@ isort . # Sort Python imports
 
 ```bash
 # Quick Start
-flask --app flaskr run --debug
+flask run
 
-# Initialize database
-$ flask --app flaskr init-db
+# To verify that the app is running, go to the /status endpoint
 ```
