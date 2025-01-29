@@ -36,8 +36,8 @@ isort . # Sort Python imports
 
 ```bash
 # Quick Start
-flask --app flaskr run --debug
+flask --app store run --debug
 
 # Initialize database
-$ flask --app flaskr init-db
+$ flask --app store init-db
 ```
