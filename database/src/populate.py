@@ -1,7 +1,7 @@
-from datetime import timedelta, datetime
-from random import randint
-from random import choice as rc
 import sqlite3
+from datetime import datetime, timedelta
+from random import choice as rc
+from random import randint
 
 
 # This function will return a random datetime between two datetime objects.
