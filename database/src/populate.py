@@ -35,12 +35,8 @@ customers = [row[0] for row in c.fetchall()]
 for i in range(randint(15000, 16000)):
     sql = "INSERT INTO [Orders] (CustomerId, EmployeeId, OrderDate, RequiredDate, ShippedDate, ShipVia, Freight, ShipName, ShipAddress, ShipCity, ShipRegion, ShipPostalCode, ShipCountry) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
     location = rc(locations)
-    order_date = random_date(
-        datetime.strptime("2012-07-10", "%Y-%m-%d"), datetime.today()
-    )
-    required_date = random_date(
-        order_date, order_date + timedelta(days=randint(14, 60))
-    )
+    order_date = random_date(datetime.strptime("2012-07-10", "%Y-%m-%d"), datetime.today())
+    required_date = random_date(order_date, order_date + timedelta(days=randint(14, 60)))
     shipped_date = random_date(order_date, order_date + timedelta(days=randint(1, 30)))
     params = (
         rc(customers),  # CustomerId
