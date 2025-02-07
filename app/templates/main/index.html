@@ -1,6 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Main Page</h1>
-    <p>This is the main page of the application.</p>
+<div class="text-center">
+    <h1>Products</h1>
+    <table class="mx-auto">
+        <tr>
+            <th>Name</th>
+            <th>Price</th>
+        </tr>
+        {% for product in products if product.UnitsInStock > 0 %}
+        <tr>
+            <td><a href="{{ url_for('product.index', product_id=product.ProductID) }}">{{ product.ProductName }}</a>
+            </td>
+            <td>{{ product.UnitPrice }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
 {% endblock %}
