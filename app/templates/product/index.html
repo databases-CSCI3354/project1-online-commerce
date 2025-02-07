@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title">{{ product.ProductName }}</h2>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <p><strong>Price:</strong> ${{ "%.2f"|format(product.UnitPrice) }}</p>
+                    <p><strong>In Stock:</strong> {{ product.UnitsInStock }}</p>
+                    <p><strong>Category:</strong> {{ category.CategoryName if category else 'Not Available' }}</p>
+                    <p><strong>Supplier:</strong> {{ supplier.CompanyName if supplier else "Not Available"}}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Description:</strong></p>
+                    <p>{{ product.QuantityPerUnit }}</p>
+                </div>
+            </div>
+            <a href="{{ url_for('main.index') }}" class="btn btn-secondary mt-3">Back to Products</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

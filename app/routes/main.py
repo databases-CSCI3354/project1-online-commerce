@@ -1,4 +1,7 @@
-from flask import Blueprint, jsonify, render_template
+from flask import Blueprint, render_template
+
+from app.models.product import Product
+from app.services.products import ProductService
 
 main_bp = Blueprint("main", __name__)
 
@@ -6,10 +9,5 @@ main_bp = Blueprint("main", __name__)
 @main_bp.route("/")
 def index():
     """Main landing page"""
-    return render_template("main/index.html")
-
-
-@main_bp.route("/api/data")
-def get_data():
-    """Sample API endpoint"""
-    return jsonify({"message": "Success", "data": {"example": "value"}})
+    products: list[Product] = ProductService().get_all_products()
+    return render_template("main/index.html", products=products)
