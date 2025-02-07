@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template
 
 from app.models.product import Product
-from app.services.products import ProductService
+from app.services.product import ProductService
 
 main_bp = Blueprint("main", __name__)
 
