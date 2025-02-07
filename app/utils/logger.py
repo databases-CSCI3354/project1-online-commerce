@@ -1,5 +1,6 @@
 import logging
 
+
 def setup_logger(name: str) -> logging.Logger:
     """Setup a logger with basic formatting."""
     logger = logging.getLogger(name)
