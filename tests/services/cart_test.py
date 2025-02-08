@@ -1,13 +1,14 @@
-import pytest
 from flask import session
 
 from app.models.product import Cart, CartItem
 from app.services.cart import get_cart, save_item_to_cart
 
+# Need the client fixture because we are working with session data, which requires a request context.
+
 
 def test_get_cart_creates_new_cart(client):
     with client:
-        client.get("/")  # This will create a session
+        client.get("/")  # Creates session context
         cart = get_cart()
         assert isinstance(cart, Cart)
         assert cart.items == {}
@@ -16,7 +17,7 @@ def test_get_cart_creates_new_cart(client):
 
 def test_get_cart_returns_existing_cart(client):
     with client:
-        client.get("/")  # This will create a session
+        client.get("/")
         existing_cart = Cart(
             items={1: CartItem(ProductID=1, ProductName="Product 1", Quantity=2, TotalPrice=10)}
         )
@@ -30,7 +31,7 @@ def test_get_cart_returns_existing_cart(client):
 
 def test_save_item_to_cart(client):
     with client:
-        client.get("/")  # This will create a session
+        client.get("/")
         cart_item = CartItem(ProductID=123, ProductName="Product 1", Quantity=2, TotalPrice=10)
         save_item_to_cart(cart_item)
 
@@ -43,7 +44,7 @@ def test_save_item_to_cart(client):
 
 def test_save_item_updates_existing_cart(client):
     with client:
-        client.get("/")  # This will create a session
+        client.get("/")
         save_item_to_cart(
             CartItem(ProductID=123, ProductName="Product 1", Quantity=2, TotalPrice=10)
         )

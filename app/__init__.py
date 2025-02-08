@@ -7,7 +7,7 @@ from app.routes import init_app
 from app.utils.database import close_db
 
 
-def create_app(test_config=None):
+def create_app():
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
     secret_key = secrets.token_hex(32)
