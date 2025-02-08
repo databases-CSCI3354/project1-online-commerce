@@ -61,7 +61,6 @@ def test_get_category_by_id_with_none(app, mock_db, mock_category_service):
     with app.app_context():
         # Arrange
         category_id = None
-        mock_db.fetchone.return_value = None
 
         # Act
         result = mock_category_service.get_category_by_id(category_id)
