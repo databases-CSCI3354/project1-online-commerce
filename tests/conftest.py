@@ -1,6 +1,10 @@
+from unittest.mock import Mock, patch
+
 import pytest
+from flask import g
 
 from app import create_app
+from app.services.category import CategoryService
 
 
 @pytest.fixture
@@ -19,3 +23,29 @@ def client(app):
 def app_context(app):
     with app.app_context():
         yield
+
+
+@pytest.fixture
+def mock_cursor():
+    cursor = Mock()
+    return cursor
+
+
+@pytest.fixture
+def mock_db(app, mock_cursor):
+    with app.app_context():
+        mock_conn = Mock()
+        mock_conn.cursor.return_value = mock_cursor
+
+        # Patch the database connection
+        with patch("app.utils.database.get_db", return_value=mock_conn):
+            g.db = mock_conn
+            yield mock_cursor
+
+
+@pytest.fixture
+def mock_category_service(app_context, mock_db):
+    service = CategoryService()
+    # Ensure the cursor is set after initialization
+    service.cursor = mock_db
+    return service
