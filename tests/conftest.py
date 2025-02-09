@@ -6,6 +6,7 @@ from flask import g
 from app import create_app
 from app.services.category import CategoryService
 from app.services.product import ProductService
+from app.services.supplier import SupplierService
 
 
 @pytest.fixture
@@ -45,7 +46,7 @@ def mock_db(app, mock_cursor):
 
 
 @pytest.fixture
-def mock_category_service(app_context, mock_db):
+def mock_category_service(mock_db):
     service = CategoryService()
     # Ensure the cursor is set after initialization
     service.cursor = mock_db
@@ -53,8 +54,16 @@ def mock_category_service(app_context, mock_db):
 
 
 @pytest.fixture
-def mock_product_service(app_context, mock_db):
+def mock_product_service(mock_db):
     service = ProductService()
+    # Ensure the cursor is set after initialization
+    service.cursor = mock_db
+    return service
+
+
+@pytest.fixture
+def mock_supplier_service(mock_db):
+    service = SupplierService()
     # Ensure the cursor is set after initialization
     service.cursor = mock_db
     return service
