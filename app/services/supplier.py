@@ -10,10 +10,11 @@ class SupplierService:
         self.columns = list(Supplier.model_fields.keys())
 
     def get_supplier_by_id(self, supplier_id: Optional[int]) -> Optional[Supplier]:
-        if not supplier_id:
+        if supplier_id is None:
             return None
-        self.cursor.execute(f"SELECT * FROM Suppliers WHERE SupplierID = {supplier_id}")
-        supplier: Supplier = Supplier.model_validate(
-            dict(zip(self.columns, self.cursor.fetchone()))
-        )
+        self.cursor.execute("SELECT * FROM Suppliers WHERE SupplierID = ?", (supplier_id,))
+        result = self.cursor.fetchone()
+        if result is None:
+            return None
+        supplier: Supplier = Supplier.model_validate(dict(zip(self.columns, result)))
         return supplier
