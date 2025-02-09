@@ -21,7 +21,7 @@ log = setup_logger(__name__)
 def index(product_id: int):
     product: Optional[Product] = ProductService().get_product_by_id(product_id)
     if not product:
-        raise ValueError(f"Error rendering product page: product not found with id {product_id}")
+        return jsonify({"error": f"Product not found with id {product_id}"}), 404
     category: Optional[Category] = CategoryService().get_category_by_id(product.CategoryID)
     supplier: Optional[Supplier] = SupplierService().get_supplier_by_id(product.SupplierID)
     return render_template(
@@ -33,14 +33,12 @@ def index(product_id: int):
 def add_to_cart(product_id):
     product: Optional[Product] = ProductService().get_product_by_id(product_id)
     if not product:
-        raise ValueError(f"Error adding product to cart: product not found with id {product_id}")
+        return jsonify({"error": f"Product not found with id {product_id}"}), 404
 
     quantity = int(request.form.get("quantity", 1))
 
     if quantity > product.UnitsInStock:
-        raise ValueError(
-            f"Error adding product to cart: requested quantity exceeds available stock"
-        )
+        return jsonify({"error": f"Requested quantity exceeds available stock"}), 500
 
     cart_item = CartItem(
         ProductID=product_id,
