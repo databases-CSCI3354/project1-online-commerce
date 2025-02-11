@@ -12,10 +12,16 @@ It is recommended to use Python virtual environment, so you don't pollute your s
 # Install dependencies
 poetry install
 ```
-
+## Mac/Linux
 ```bash
 # Activate Python virtual environment
 eval "$(poetry env activate)"
+```
+
+## Windows/Powershell
+```bash
+# Activate Python Virtual Environment
+& .venv\Scripts\Activate.ps1
 ```
 
 ## Add dependencies
