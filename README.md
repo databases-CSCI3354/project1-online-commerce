@@ -50,3 +50,18 @@ flask run
 
 # To verify that the app is running, go to the /status endpoint
 ```
+
+## Folder Structure
+
+```bash
+├── app/
+│   ├── models/ # Data models used across the application
+│   ├── routes/ # Routes handle the HTTP requests and render the appropriate templates (no business logic)
+│   ├── services/ # Services handle the business logic of the application
+│   ├── static/ # Static files like CSS
+│   ├── templates/ # Jinja templates
+│   ├── utils/ # Utility functions that are used across the entire application
+│   ├── northwind.db # Built database file
+│   └── run.py # Main executuable file
+└── tests/ # Tests for each file are labelled with the file name
+```
