@@ -45,7 +45,7 @@ isort . # Sort Python imports
 ## Commands
 
 ```bash
-# Quick Start
+# Quick Start at root directory
 flask run
 
 # To verify that the app is running, go to the /status endpoint
