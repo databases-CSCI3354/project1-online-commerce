@@ -27,17 +27,33 @@ def get_db():
 def login():
     """Handle user login"""
     data = request.get_json()
-    # Add your login logic here
-    username = request.get('username')
-    password = request.get('password')
+    username = data.get('username')
+    password = data.get('password')
     validate_user = validate(username, password)
-    if validate_user == False:
+    if validate_user is None:
         error = 'Invalid Credentials Please Try Again'
         return render_template('index.html', error=error)
     else:
-        return redirect(url_for('loggedin'))
-    return render_template('index.html', error=error)
+        return redirect(url_for('profile'))
     return jsonify({"message": "Login endpoint"})
+
+@auth_bp.route("/register", methods=["POST"])
+def register():
+        data = request.get_json()
+        username = data.get('username')
+        password = data.get('password')
+
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+        g.db = get_db()
+        try:
+            g.db.execute(
+                'INSERT INTO Users (username, password) VALUES (?, ?)',
+                (username, hashed_password)
+            )
+            g.db.commit()
+        except sqlite3.IntegrityError:
+            return jsonify({"error": "Username already exists"}), 400
+        return jsonify({"message": "Register endpoint"})
 
 def query_db(query, args=(), one=False):
     cur = get_db().execute(query, args)
@@ -49,11 +65,10 @@ def check_password(hashed_password, password):
     return bcrypt.check_password_hash(hashed_password, password) 
 
 def validate(username, password):
-    g.db = get_db()
-    user = query_db('SELECT * FROM Users WHERE username = ?',
-                    [username], one=True)
-
-    return False if user is None else check_password(user['password'], password)
+    user = query_db('SELECT * FROM Users WHERE username = ?', [username], one=True)
+    if user is None or not check_password(user[1], password):
+        return None
+    return user
 
 
 @auth_bp.route("/profile")
