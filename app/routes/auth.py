@@ -47,7 +47,7 @@ def register():
         g.db = get_db()
         try:
             g.db.execute(
-                'INSERT INTO Users (username, password) VALUES (?, ?)',
+                'INSERT INTO Users (username, hashed_password) VALUES (?, ?)',
                 (username, hashed_password)
             )
             g.db.commit()
@@ -66,7 +66,8 @@ def check_password(hashed_password, password):
 
 def validate(username, password):
     user = query_db('SELECT * FROM Users WHERE username = ?', [username], one=True)
-    if user is None or not check_password(user[1], password):
+    print(type(user))
+    if user is None or not check_password(dict(user)['hashed_password'], password):
         return None
     return user
 
