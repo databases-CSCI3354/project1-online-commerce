@@ -16,7 +16,7 @@ def create_app():
     app.config["DATABASE"] = os.path.join(app.root_path, "northwind.db")
     
     # Disable template caching during testing
-    app.config['TESTING'] = True
+    app.config["TESTING"] = True
     
     # Initialize database tables
     web_employee_id = init_db(app)
