@@ -1,9 +1,19 @@
 {% extends "base.html" %}
 
+{% block title %}{{ product.ProductName }}{% endblock %}
+
 {% block content %}
 <div class="max-w-4xl mx-auto p-6">
     <div class="bg-white shadow-lg rounded-lg overflow-hidden">
         <div class="p-8">
+            {% for message in get_flashed_messages() %}
+                {% if 'removed' not in message.lower() %}
+                <div class="mb-4 p-4 rounded-md {% if 'error' in message %}bg-red-50 border-red-200{% else %}bg-green-50 border-green-200{% endif %}">
+                    <p class="{% if 'error' in message %}text-red-700{% else %}text-green-700{% endif %}">{{ message }}</p>
+                </div>
+                {% endif %}
+            {% endfor %}
+
             <h2 class="text-3xl font-bold text-gray-800 mb-4">{{ product.ProductName }}</h2>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -74,6 +84,7 @@
         const quantityInput = document.getElementById('quantity');
         const decreaseButton = document.getElementById('decrease-qty');
         const increaseButton = document.getElementById('increase-qty');
+        const maxStock = parseInt(quantityInput.getAttribute('max'));
 
         decreaseButton.addEventListener('click', function () {
             let currentValue = parseInt(quantityInput.value);
@@ -84,8 +95,21 @@
 
         increaseButton.addEventListener('click', function () {
             let currentValue = parseInt(quantityInput.value);
-            if (currentValue < parseInt(quantityInput.max)) {
+            if (currentValue < maxStock) {
                 quantityInput.value = currentValue + 1;
+            } else {
+                alert(`Only ${maxStock} units available in stock!`);
+            }
+        });
+
+        // Prevent manual entry of invalid quantities
+        quantityInput.addEventListener('change', function() {
+            let value = parseInt(this.value);
+            if (value > maxStock) {
+                alert(`Only ${maxStock} units available in stock!`);
+                this.value = maxStock;
+            } else if (value < 1) {
+                this.value = 1;
             }
         });
     });
