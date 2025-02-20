@@ -1,10 +1,41 @@
 <!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{% endblock %} - Walmart</title>
+  <!-- Tailwind CSS Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='globals.css') }}">
+
+</head>
+
+<body>
+  <nav class="bg-blue-600 text-white p-4">
+    <h1 class="text-2xl font-bold">Walmart</h1>
+    <ul>
+      <!-- Navigation links go here -->
+    </ul>
+  </nav>
+  <section class="content p-4">
+    <header>
+      {% block header %}{% endblock %}
+    </header>
+    {% for message in get_flashed_messages() %}
+    <div class="flash bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4">{{ message }}</div>
+    {% endfor %}
+    {% block content %}{% endblock %}
+  </section>
+</body>
+
+</html>
 <title>{% block title %}{% endblock %} - Walmart</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <nav>
   <h1>Walmart</h1>
   <ul>
-
+    <li><a href="{{ url_for('product.checkout') }}" class="cart-link">🛒 Cart</a></li>
   </ul>
 </nav>
 <section class="content">
@@ -16,3 +47,38 @@
   {% endfor %}
   {% block content %}{% endblock %}
 </section>
+
+<style>
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #041e42;
+  color: white;
+}
+
+nav h1 {
+  margin: 0;
+}
+
+nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 1rem;
+}
+
+.cart-link {
+  color: white;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cart-link:hover {
+  color: #ffc220;
+}
+</style>

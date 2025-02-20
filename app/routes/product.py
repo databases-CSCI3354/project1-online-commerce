@@ -5,7 +5,7 @@ from flask import Blueprint, jsonify, render_template, request
 from app.models.category import Category
 from app.models.product import CartItem, Product
 from app.models.supplier import Supplier
-from app.services.cart import save_item_to_cart
+from app.services.cart import get_cart, save_item_to_cart
 from app.services.category import CategoryService
 from app.services.product import ProductService
 from app.services.supplier import SupplierService
@@ -21,7 +21,7 @@ log = setup_logger(__name__)
 def index(product_id: int):
     product: Optional[Product] = ProductService().get_product_by_id(product_id)
     if not product:
-        raise ValueError(f"Error rendering product page: product not found with id {product_id}")
+        return jsonify({"error": f"Product not found with id {product_id}"}), 404
     category: Optional[Category] = CategoryService().get_category_by_id(product.CategoryID)
     supplier: Optional[Supplier] = SupplierService().get_supplier_by_id(product.SupplierID)
     return render_template(
@@ -33,14 +33,12 @@ def index(product_id: int):
 def add_to_cart(product_id):
     product: Optional[Product] = ProductService().get_product_by_id(product_id)
     if not product:
-        raise ValueError(f"Error adding product to cart: product not found with id {product_id}")
+        return jsonify({"error": f"Product not found with id {product_id}"}), 404
 
     quantity = int(request.form.get("quantity", 1))
 
     if quantity > product.UnitsInStock:
-        raise ValueError(
-            f"Error adding product to cart: requested quantity exceeds available stock"
-        )
+        return jsonify({"error": f"Requested quantity exceeds available stock"}), 500
 
     cart_item = CartItem(
         ProductID=product_id,
@@ -59,3 +57,12 @@ def add_to_cart(product_id):
     # )
 
     return jsonify({"message": f"Added {product.ProductName} to cart"})
+
+
+@product_bp.route("/checkout")
+def checkout():
+    cart = get_cart()
+    if not cart:
+        return jsonify({"error": "Cart is empty"}), 400
+    cart_total = sum(item.TotalPrice for item in cart.items.values())
+    return render_template("product/checkout.html", cart=cart, cart_total=cart_total)
