@@ -66,3 +66,11 @@ def checkout():
         return jsonify({"error": "Cart is empty"}), 400
     cart_total = sum(item.TotalPrice for item in cart.items.values())
     return render_template("product/checkout.html", cart=cart, cart_total=cart_total)
+
+@product_bp.route("/cart")
+def cart():
+    cart = get_cart()
+    if not cart:
+        return jsonify({"error": "Cart is empty"}), 400
+    cart_total = sum(item.TotalPrice for item in cart.items.values())
+    return render_template("product/cart.html", cart=cart, cart_total=cart_total)
