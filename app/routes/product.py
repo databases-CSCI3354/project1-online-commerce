@@ -38,14 +38,17 @@ def add_to_cart(product_id):
         return redirect(url_for("main.index"))
 
     quantity = int(request.form.get("quantity", 1))
-    
+
     # get the current quantity of the product in the cart to avoid adding more than the stock
     cart_service = CartService()
     current_cart_quantity = cart_service.get_item_quantity(product_id)
     total_quantity = current_cart_quantity + quantity
 
     if total_quantity > product.UnitsInStock:
-        flash(f"Cannot add {quantity} items. Only {product.UnitsInStock - current_cart_quantity} remaining.", "error")
+        flash(
+            f"Cannot add {quantity} items. Only {product.UnitsInStock - current_cart_quantity} remaining.",
+            "error",
+        )
         return redirect(url_for("product.index", product_id=product_id))
 
     cart_item = CartItem(
@@ -57,7 +60,7 @@ def add_to_cart(product_id):
 
     save_item_to_cart(cart_item=cart_item)
     log.info(f"Added the following item to cart: {cart_item}")
-    
+
     flash(f"Added {quantity} {product.ProductName} to cart!", "success")
     return redirect(url_for("product.index", product_id=product_id))
 

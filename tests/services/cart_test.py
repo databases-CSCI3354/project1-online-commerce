@@ -43,13 +43,9 @@ def test_save_item_updates_existing_cart(client):
     with client:
         client.get("/")
         # Add first item
-        save_item_to_cart(
-            CartItem(ProductID=1, ProductName="Chai", Quantity=2, TotalPrice=36.0)
-        )
+        save_item_to_cart(CartItem(ProductID=1, ProductName="Chai", Quantity=2, TotalPrice=36.0))
         # Add second item
-        save_item_to_cart(
-            CartItem(ProductID=2, ProductName="Chang", Quantity=3, TotalPrice=57.0)
-        )
+        save_item_to_cart(CartItem(ProductID=2, ProductName="Chang", Quantity=3, TotalPrice=57.0))
 
         cart = get_cart()
         assert len(cart.items) == 2

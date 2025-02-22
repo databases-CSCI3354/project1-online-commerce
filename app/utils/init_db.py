@@ -9,16 +9,14 @@ log = setup_logger(__name__)
 def init_db(app):
     """Initialize the database with required tables."""
     with app.app_context():
-        db = sqlite3.connect(
-            app.config['DATABASE'],
-            detect_types=sqlite3.PARSE_DECLTYPES
-        )
-        
+        db = sqlite3.connect(app.config["DATABASE"], detect_types=sqlite3.PARSE_DECLTYPES)
+
         # Enable foreign key support
         db.execute("PRAGMA foreign_keys = ON")
-        
+
         # Create tables
-        db.executescript('''
+        db.executescript(
+            """
             -- Create Authentication table
             CREATE TABLE IF NOT EXISTS Authentication (
                 UserID TEXT PRIMARY KEY,
@@ -50,17 +48,18 @@ def init_db(app):
             ) VALUES (
                 'WEB', 'WEB', 'Online Sales System'
             );
-        ''')
-        
+        """
+        )
+
         db.commit()
-        
+
         # Get the WEB employee ID for reference
         cursor = db.cursor()
         cursor.execute(
             "SELECT EmployeeID FROM Employees WHERE FirstName = 'WEB' AND LastName = 'WEB'"
         )
         web_employee_id = cursor.fetchone()[0]
-        
+
         log.info(f"Database initialized. WEB employee ID: {web_employee_id}")
-        
-        return web_employee_id 
+
+        return web_employee_id

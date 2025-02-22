@@ -15,20 +15,6 @@ class Product(BaseModel):
     ReorderLevel: int
     Discontinued: str
 
-    def to_dict(self):
-        return {
-            "ProductID": self.ProductID,
-            "ProductName": self.ProductName,
-            "SupplierID": self.SupplierID,
-            "CategoryID": self.CategoryID,
-            "QuantityPerUnit": self.QuantityPerUnit,
-            "UnitPrice": self.UnitPrice,
-            "UnitsInStock": self.UnitsInStock,
-            "UnitsOnOrder": self.UnitsOnOrder,
-            "ReorderLevel": self.ReorderLevel,
-            "Discontinued": self.Discontinued,
-        }
-
 
 class CartItem(BaseModel):
     ProductID: int
@@ -36,17 +22,6 @@ class CartItem(BaseModel):
     ProductName: str
     TotalPrice: float
 
-    def to_dict(self):
-        return {
-            "ProductID": self.ProductID,
-            "Quantity": self.Quantity,
-            "ProductName": self.ProductName,
-            "TotalPrice": self.TotalPrice,
-        }
-
 
 class Cart(BaseModel):
     items: dict[int, CartItem]
-
-    def to_dict(self):
-        return {"items": {k: v.to_dict() for k, v in self.items.items()}}

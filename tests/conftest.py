@@ -29,10 +29,7 @@ def app():
     shutil.copy2(main_db, db_path)
 
     # Update the app config to use the test database
-    app.config.update({
-        "TESTING": True,
-        "DATABASE": db_path
-    })
+    app.config.update({"TESTING": True, "DATABASE": db_path})
 
     yield app
 
@@ -145,6 +142,6 @@ def cleanup_db(app):
     """Clean up the database after each test."""
     yield
     with app.app_context():
-        if hasattr(g, 'db'):
+        if hasattr(g, "db"):
             g.db.execute("DELETE FROM Shopping_Cart")
             g.db.commit()
