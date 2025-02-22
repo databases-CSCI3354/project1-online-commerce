@@ -1,3 +1,6 @@
+import os
+import shutil
+import tempfile
 from unittest.mock import Mock, patch
 
 import pytest
@@ -14,9 +17,24 @@ from app.services.supplier import SupplierService
 
 @pytest.fixture
 def app():
+    # Create a temporary file to store the test database
+    db_fd, db_path = tempfile.mkstemp()
+    os.close(db_fd)  # Close the file descriptor as we'll use the path with shutil
+
+    # Create the app first to get the main database path
     app = create_app()
-    app.config["TESTING"] = True
-    return app
+    main_db = os.path.join(app.root_path, "northwind.db")
+
+    # Copy the main database to our test location
+    shutil.copy2(main_db, db_path)
+
+    # Update the app config to use the test database
+    app.config.update({"TESTING": True, "DATABASE": db_path})
+
+    yield app
+
+    # Clean up the temporary file
+    os.unlink(db_path)
 
 
 @pytest.fixture
@@ -117,3 +135,13 @@ def mock_supplier():
         Fax="Test Fax",
         HomePage="Test Home Page",
     )
+
+
+@pytest.fixture(autouse=True)
+def cleanup_db(app):
+    """Clean up the database after each test."""
+    yield
+    with app.app_context():
+        if hasattr(g, "db"):
+            g.db.execute("DELETE FROM Shopping_Cart")
+            g.db.commit()

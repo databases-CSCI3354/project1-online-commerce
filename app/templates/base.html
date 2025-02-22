@@ -8,23 +8,21 @@
   <!-- Tailwind CSS Play CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="{{ url_for('static', filename='globals.css') }}">
-
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
-  <nav class="bg-blue-600 text-white p-4">
+  <nav class="bg-blue-600 text-white p-4 flex justify-between items-center">
     <h1 class="text-2xl font-bold">Walmart</h1>
-    <ul>
-      <!-- Navigation links go here -->
+    <ul class="flex gap-4">
+      <li><a href="{{ url_for('product.checkout') }}" class="cart-link hover:text-yellow-300">🛒 Cart</a></li>
     </ul>
   </nav>
+
   <section class="content p-4">
     <header>
       {% block header %}{% endblock %}
     </header>
-    {% for message in get_flashed_messages() %}
-    <div class="flash bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4">{{ message }}</div>
-    {% endfor %}
     {% block content %}{% endblock %}
   </section>
 </body>

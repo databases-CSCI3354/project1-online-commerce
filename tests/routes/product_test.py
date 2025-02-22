@@ -57,11 +57,17 @@ def test_index_route(
 def test_add_to_cart_route(client, mock_product_service, monkeypatch):
     monkeypatch.setattr(ProductService, "get_product_by_id", mock_product_service.get_product_by_id)
 
-    response = client.post("/product/1", data={"quantity": 2})
+    # Test successful addition
+    response = client.post("/product/1", data={"quantity": 2}, follow_redirects=True)
     assert response.status_code == 200
+    assert b"Added 2 Test Product to cart!" in response.data
 
-    response = client.post("/product/999", data={"quantity": 1})
-    assert response.status_code == 404
+    # Test non-existent product
+    response = client.post("/product/999", data={"quantity": 1}, follow_redirects=True)
+    assert response.status_code == 200  # Because it redirects to main.index
+    assert b"Product not found with id 999" in response.data
 
-    response = client.post("/product/1", data={"quantity": 101})
-    assert response.status_code == 500
+    # Test exceeding stock quantity
+    response = client.post("/product/1", data={"quantity": 101}, follow_redirects=True)
+    assert response.status_code == 200  # Because it redirects to product.index
+    assert b"Cannot add 101 items" in response.data
