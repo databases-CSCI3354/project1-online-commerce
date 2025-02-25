@@ -1,6 +1,7 @@
 from typing import Optional
 
 from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
+from werkzeug.wrappers.response import Response
 
 from app.models.cart import CartItem
 from app.models.category import Category
@@ -31,7 +32,7 @@ def index(product_id: int):
 
 
 @product_bp.route("/<int:product_id>", methods=["POST"])
-def add_to_cart(product_id):
+def add_to_cart(product_id) -> Response:
     product: Optional[Product] = ProductService().get_product_by_id(product_id)
     if not product:
         flash(f"Product not found with id {product_id}", "error")
