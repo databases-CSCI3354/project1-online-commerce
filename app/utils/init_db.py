@@ -59,6 +59,6 @@ def init_db(app):
         )
         web_employee_id = cursor.fetchone()[0]
 
-        log.info(f"Database initialized. WEB employee ID: {web_employee_id}")
+        log.info("Database initialized. WEB employee ID: %s", web_employee_id)
 
         return web_employee_id

@@ -24,6 +24,13 @@ dependencies = [
 [tool.poetry]
 package-mode = false
 
+[tool.pylint.messages_control]
+disable = [
+    "missing-module-docstring",
+    "missing-function-docstring",
+]
+
+
 [tool.black]
 line-length = 100
 
