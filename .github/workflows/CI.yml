@@ -38,3 +38,7 @@ jobs:
       - name: Run black
         run: |
           poetry run black --check --diff .
+
+      - name: Run Mypy
+        run: |
+          poetry run mypy .

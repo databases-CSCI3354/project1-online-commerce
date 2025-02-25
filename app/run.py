@@ -8,7 +8,7 @@ load_dotenv()
 
 config_name = os.getenv("FLASK_ENV", "development")
 
-app = create_app(config_name)
+app = create_app()
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))

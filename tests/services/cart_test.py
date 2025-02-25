@@ -1,5 +1,3 @@
-from flask import session
-
 from app.models.cart import Cart, CartItem
 from app.services.cart import get_cart, save_item_to_cart
 

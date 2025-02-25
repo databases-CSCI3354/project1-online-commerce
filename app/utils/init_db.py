@@ -1,4 +1,3 @@
-import os
 import sqlite3
 
 from app.utils.logger import setup_logger

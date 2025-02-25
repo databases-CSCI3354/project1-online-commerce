@@ -1,3 +1,5 @@
+# type: ignore
+
 import sqlite3
 from datetime import datetime, timedelta
 from random import choice as rc
