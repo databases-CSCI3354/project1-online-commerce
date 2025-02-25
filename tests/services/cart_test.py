@@ -1,7 +1,7 @@
 from app.models.cart import Cart, CartItem
 from app.services.cart import get_cart, save_item_to_cart
 
-# Need the client fixture because we are working with session data, which requires a request context.
+# Need client fixture because we are working with session data, which requires a request context.
 
 
 def test_get_cart_creates_new_cart(client):

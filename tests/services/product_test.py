@@ -18,7 +18,6 @@ def test_get_all_products(app, mock_db, mock_product_service):
                 "UnitsOnOrder": 0,
                 "ReorderLevel": 5,
                 "Discontinued": "1",
-                "UnitsInStock": 0,
             },
             {
                 "ProductID": 2,
@@ -31,7 +30,6 @@ def test_get_all_products(app, mock_db, mock_product_service):
                 "UnitsOnOrder": 0,
                 "ReorderLevel": 0,
                 "Discontinued": "0",
-                "UnitsInStock": 0,
             },
         ]
         mock_rows = [tuple(product.values()) for product in expected_products]
@@ -72,7 +70,6 @@ def test_get_product_by_id_with_valid_id(app, mock_db, mock_product_service):
             "UnitsOnOrder": 0,
             "ReorderLevel": 5,
             "Discontinued": "1",
-            "UnitsInStock": 0,
         }
 
         mock_db.fetchone.return_value = (

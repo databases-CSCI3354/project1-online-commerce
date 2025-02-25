@@ -47,7 +47,8 @@ def add_to_cart(product_id) -> Response:
 
     if total_quantity > product.UnitsInStock:
         flash(
-            f"Cannot add {quantity} items. Only {product.UnitsInStock - current_cart_quantity} remaining.",
+            f"Cannot add {quantity} items. "
+            f"Only {product.UnitsInStock - current_cart_quantity} remaining.",
             "error",
         )
         return redirect(url_for("product.index", product_id=product_id))
@@ -60,7 +61,7 @@ def add_to_cart(product_id) -> Response:
     )
 
     save_item_to_cart(cart_item=cart_item)
-    log.info(f"Added the following item to cart: {cart_item}")
+    log.info("Added the following item to cart: %s", cart_item)
 
     flash(f"Added {quantity} {product.ProductName} to cart!", "success")
     return redirect(url_for("product.index", product_id=product_id))
