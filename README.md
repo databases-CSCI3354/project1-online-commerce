@@ -12,7 +12,7 @@ Utilised the `pytest` framework for testing, focusing on unit testing the cart f
 
 ### Notable implementation details
 
-Clear segregation of concerns among `services`, `models` and `routes`. `routes` are purely responsible for rendering the HTML templates, offloading all business logic to the corresponding `services`. All data structures are centrally managed in the `modules` module
+Clear segregation of concerns among `services`, `models` and `routes`. `routes` are purely responsible for rendering the HTML templates, offloading all business logic to the corresponding service in `services`. All data structures are centrally managed in the `models` module.
 
 ## Quick Start
 
