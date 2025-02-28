@@ -1,10 +1,26 @@
 # Online Commerce
 
-## Install Poetry
+## Overview of Project
+
+### Team Members
+
+Jin Yang Chen (development engineer)
+
+### Description of Tests
+
+Utilised the `pytest` framework for testing, focusing on unit testing the cart functionality, and database retrieval logic. Tests related to the business logic of `category`, `product` and `supplier` have also been included.
+
+### Notable implementation details
+
+Clear segregation of concerns among `services`, `models` and `routes`. `routes` are purely responsible for rendering the HTML templates, offloading all business logic to the corresponding `services`. All data structures are centrally managed in the `modules` module
+
+## Quick Start
+
+### Install Poetry
 
 Please follow the official [installation guide](https://python-poetry.org/docs/#installation) to install Poetry.
 
-## Install dependencies
+### Install dependencies
 
 It is recommended to use Python virtual environment, so you don't pollute your system Python environment.
 
@@ -13,41 +29,25 @@ It is recommended to use Python virtual environment, so you don't pollute your s
 poetry install
 ```
 
-## Mac/Linux
+### Mac/Linux
 
 ```bash
 # Activate Python virtual environment
 eval "$(poetry env activate)"
 ```
 
-## Windows/Powershell
+### Windows/Powershell
 
 ```bash
 # Activate Python Virtual Environment
 & .venv\Scripts\Activate.ps1
 ```
 
-## Add dependencies
-
-If you want to add a new dependency, please use `poetry add` command.
-
-For example, to add `python-dotenv` dependency, run:
-
-```bash
-poetry add python-dotenv
-```
-
-## Set up environment variables
+### Set up environment variables
 
 ```bash
 # Create .env file (by copying from .env.example)
 cp .env.example .env
-```
-
-## Style Enforcement
-
-```bash
-make lint # Run in the root of the directory
 ```
 
 ## Commands
@@ -57,6 +57,24 @@ make lint # Run in the root of the directory
 flask run
 
 # To verify that the app is running, go to the /status endpoint
+```
+
+## Development
+
+### Add dependencies
+
+If you want to add a new dependency, please use `poetry add` command.
+
+For example, to add `python-dotenv` dependency, run:
+
+```bash
+poetry add python-dotenv
+```
+
+## Style Enforcement
+
+```bash
+make lint # Run in the root of the directory
 ```
 
 ## Folder Structure
