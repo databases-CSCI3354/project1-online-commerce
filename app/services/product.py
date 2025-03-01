@@ -29,3 +29,40 @@ class ProductService:
             return None
         product: Product = Product.model_validate(dict(zip(self.columns, result)))
         return product
+
+    def search_products(self, search_term: str) -> list[Product]:
+        """Search for products by name or description."""
+        if not search_term:
+            return self.get_all_products()
+            
+        # Use LIKE for case-insensitive search with wildcards
+        search_pattern = f"%{search_term}%"
+        self.cursor.execute(
+            """
+            SELECT * FROM Products 
+            WHERE ProductName LIKE ? OR QuantityPerUnit LIKE ?
+            ORDER BY ProductName
+            """, 
+            (search_pattern, search_pattern)
+        )
+        
+        products: list[Product] = [
+            Product.model_validate(dict(zip(self.columns, row))) for row in self.cursor.fetchall()
+        ]
+        return products
+        
+    def get_products_by_category(self, category_id: int) -> list[Product]:
+        """Get all products in a specific category."""
+        self.cursor.execute(
+            """
+            SELECT * FROM Products 
+            WHERE CategoryID = ? 
+            ORDER BY ProductName
+            """, 
+            (category_id,)
+        )
+        
+        products: list[Product] = [
+            Product.model_validate(dict(zip(self.columns, row))) for row in self.cursor.fetchall()
+        ]
+        return products
