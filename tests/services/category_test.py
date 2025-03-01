@@ -71,3 +71,40 @@ def test_get_category_by_id_with_none(app, mock_db, mock_category_service):
         # Verify no database calls were made
         mock_db.execute.assert_not_called()
         mock_db.fetchone.assert_not_called()
+
+
+def test_get_all_categories(app, mock_db, mock_category_service):
+    with app.app_context():
+        # Arrange
+        expected_categories = [
+            {
+                "CategoryID": 1,
+                "CategoryName": "Beverages",
+                "Description": "Soft drinks, coffees, teas, beers, and ales",
+                "Picture": b"beverage_image_data",
+            },
+            {
+                "CategoryID": 2,
+                "CategoryName": "Condiments",
+                "Description": "Sweet and savory sauces, relishes, spreads, and seasonings",
+                "Picture": b"condiment_image_data",
+            },
+        ]
+        mock_rows = [tuple(category.values()) for category in expected_categories]
+        mock_db.fetchall.return_value = mock_rows
+
+        # Act
+        result = mock_category_service.get_all_categories()
+
+        # Assert
+        assert len(result) == len(expected_categories)
+        for i, category in enumerate(result):
+            assert isinstance(category, Category)
+            assert category.CategoryID == expected_categories[i]["CategoryID"]
+            assert category.CategoryName == expected_categories[i]["CategoryName"]
+            assert category.Description == expected_categories[i]["Description"]
+            assert category.Picture == expected_categories[i]["Picture"]
+
+        # Verify mock interactions
+        mock_db.execute.assert_called_once_with("SELECT * FROM Categories ORDER BY CategoryName")
+        mock_db.fetchall.assert_called_once()
