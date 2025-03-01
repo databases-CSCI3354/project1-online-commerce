@@ -142,3 +142,136 @@ def test_get_product_by_id_with_none(app, mock_db, mock_product_service):
         # Verify no database calls were made
         mock_db.execute.assert_not_called()
         mock_db.fetchone.assert_not_called()
+
+
+def test_search_products_with_valid_term(app, mock_db, mock_product_service):
+    with app.app_context():
+        # Arrange
+        search_term = "chai"
+        expected_products = [
+            {
+                "ProductID": 1,
+                "ProductName": "Chai",
+                "SupplierID": 1,
+                "CategoryID": 1,
+                "QuantityPerUnit": "10 boxes x 20 bags",
+                "UnitPrice": 18.00,
+                "UnitsInStock": 39,
+                "UnitsOnOrder": 0,
+                "ReorderLevel": 10,
+                "Discontinued": "0",
+            },
+        ]
+        mock_rows = [tuple(product.values()) for product in expected_products]
+        mock_db.fetchall.return_value = mock_rows
+
+        # Act
+        result = mock_product_service.search_products(search_term)
+
+        # Assert
+        assert len(result) == len(expected_products)
+        for i, product in enumerate(result):
+            assert isinstance(product, Product)
+            assert product.ProductID == expected_products[i]["ProductID"]
+            assert product.ProductName == expected_products[i]["ProductName"]
+
+        # Verify mock interactions
+        mock_db.execute.assert_called_once()
+        search_pattern = f"%{search_term}%"
+        assert search_pattern in str(mock_db.execute.call_args)
+        mock_db.fetchall.assert_called_once()
+
+
+def test_search_products_with_empty_term(app, mock_db, mock_product_service):
+    with app.app_context():
+        # Arrange
+        search_term = ""
+        expected_products = [
+            {
+                "ProductID": 1,
+                "ProductName": "Product 1",
+                "SupplierID": 1,
+                "CategoryID": 1,
+                "QuantityPerUnit": "24 - 12 oz bottles",
+                "UnitPrice": 36.00,
+                "UnitsInStock": 10,
+                "UnitsOnOrder": 0,
+                "ReorderLevel": 5,
+                "Discontinued": "1",
+            },
+            {
+                "ProductID": 2,
+                "ProductName": "Product 2",
+                "SupplierID": 2,
+                "CategoryID": 2,
+                "QuantityPerUnit": "48 - 6 oz jars",
+                "UnitPrice": 14.00,
+                "UnitsInStock": 20,
+                "UnitsOnOrder": 0,
+                "ReorderLevel": 0,
+                "Discontinued": "0",
+            },
+        ]
+        mock_rows = [tuple(product.values()) for product in expected_products]
+        mock_db.fetchall.return_value = mock_rows
+
+        # Act
+        result = mock_product_service.search_products(search_term)
+
+        # Assert
+        assert len(result) == len(expected_products)
+        
+        # Should call get_all_products instead of searching
+        mock_db.execute.assert_called_once()
+        assert "SELECT * FROM Products" in str(mock_db.execute.call_args)
+        mock_db.fetchall.assert_called_once()
+
+
+def test_get_products_by_category(app, mock_db, mock_product_service):
+    with app.app_context():
+        # Arrange
+        category_id = 1
+        expected_products = [
+            {
+                "ProductID": 1,
+                "ProductName": "Chai",
+                "SupplierID": 1,
+                "CategoryID": 1,
+                "QuantityPerUnit": "10 boxes x 20 bags",
+                "UnitPrice": 18.00,
+                "UnitsInStock": 39,
+                "UnitsOnOrder": 0,
+                "ReorderLevel": 10,
+                "Discontinued": "0",
+            },
+            {
+                "ProductID": 2,
+                "ProductName": "Chang",
+                "SupplierID": 1,
+                "CategoryID": 1,
+                "QuantityPerUnit": "24 - 12 oz bottles",
+                "UnitPrice": 19.00,
+                "UnitsInStock": 17,
+                "UnitsOnOrder": 40,
+                "ReorderLevel": 25,
+                "Discontinued": "0",
+            },
+        ]
+        mock_rows = [tuple(product.values()) for product in expected_products]
+        mock_db.fetchall.return_value = mock_rows
+
+        # Act
+        result = mock_product_service.get_products_by_category(category_id)
+
+        # Assert
+        assert len(result) == len(expected_products)
+        for i, product in enumerate(result):
+            assert isinstance(product, Product)
+            assert product.ProductID == expected_products[i]["ProductID"]
+            assert product.ProductName == expected_products[i]["ProductName"]
+            assert product.CategoryID == expected_products[i]["CategoryID"]
+
+        # Verify mock interactions
+        mock_db.execute.assert_called_once()
+        assert str(category_id) in str(mock_db.execute.call_args)
+        mock_db.fetchall.assert_called_once()

@@ -19,3 +19,11 @@ class CategoryService:
             return None
         category: Category = Category.model_validate(dict(zip(self.columns, result)))
         return category
+        
+    def get_all_categories(self) -> list[Category]:
+        """Get all categories from the database."""
+        self.cursor.execute("SELECT * FROM Categories ORDER BY CategoryName")
+        categories: list[Category] = [
+            Category.model_validate(dict(zip(self.columns, row))) for row in self.cursor.fetchall()
+        ]
+        return categories

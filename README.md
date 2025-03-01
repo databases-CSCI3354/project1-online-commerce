@@ -6,6 +6,16 @@
 
 Jin Yang Chen (development engineer)
 
+Omer Yurekli
+
+Arona Gaye
+
+Omar Tall (general developer)
+
+Salamun Nuhin
+
+Abraham Chang
+
 ### Description of Tests
 
 Utilised the `pytest` framework for testing, focusing on unit testing the cart functionality, and database retrieval logic. Tests related to the business logic of `category`, `product` and `supplier` have also been included.
@@ -91,3 +101,20 @@ make lint # Run in the root of the directory
 │   └── run.py # Main executuable file
 └── tests/ # Tests for each file are labelled with the file name
 ```
+
+## Database Modifications
+
+### Regional Classification for Customers  
+- The `Customers` table was updated to assign a `Region` value based on the customer's `Country`.  
+- Example assignments include:  
+  - UK & Ireland → *British Isles*  
+  - USA & Canada → *North America*  
+  - Mexico → *Central America*  
+  - Brazil, Argentina, Venezuela → *South America*  
+  - Poland → *Eastern Europe*  
+  - Sweden & Denmark → *Northern Europe*  
+  - Spain, Italy, Portugal → *Southern Europe*  
+
+### Enhancements to Existing Tables  
+- The `Categories` table now includes images stored as `BLOB` data for product classification.  
+- Additional structural or data integrity improvements may have been made across other tables.
