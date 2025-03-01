@@ -7,7 +7,7 @@ from app.models.cart import CartItem
 from app.models.category import Category
 from app.models.product import Product
 from app.models.supplier import Supplier
-from app.services.cart import CartService, get_cart, save_item_to_cart
+from app.services.cart import get_cart, save_item_to_cart
 from app.services.category import CategoryService
 from app.services.product import ProductService
 from app.services.supplier import SupplierService

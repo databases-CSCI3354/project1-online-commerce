@@ -5,6 +5,7 @@
 ### Team Members
 
 Jin Yang Chen (development engineer)
+Omer Yurekli (team lead)
 
 ### Description of Tests
 
