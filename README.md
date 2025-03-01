@@ -6,6 +6,16 @@
 
 Jin Yang Chen (development engineer)
 
+Omer Yurekli
+
+Arona Gaye
+
+Omar Tall (general developer)
+
+Salamun Nuhin
+
+Abraham Chang
+
 ### Description of Tests
 
 Utilised the `pytest` framework for testing, focusing on unit testing the cart functionality, and database retrieval logic. Tests related to the business logic of `category`, `product` and `supplier` have also been included.
@@ -91,3 +101,5 @@ make lint # Run in the root of the directory
 │   └── run.py # Main executuable file
 └── tests/ # Tests for each file are labelled with the file name
 ```
+
+## Database Modifications
