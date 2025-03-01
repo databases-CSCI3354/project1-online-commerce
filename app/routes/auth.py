@@ -1,7 +1,7 @@
 import sqlite3
-from flask import Blueprint, jsonify, render_template, request, current_app, g, url_for, redirect
+from flask import Blueprint, current_app, g, jsonify, redirect, render_template, request, url_for
+from flask_bcrypt import Bcrypt
 from flask_login import login_required
-from flask_bcrypt import Bcrypt 
 
 auth_bp = Blueprint("auth", __name__)
 bcrypt = Bcrypt()
