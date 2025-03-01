@@ -5,7 +5,6 @@
 ### Team Members
 
 Jin Yang Chen (development engineer)
-Omer Yurekli (team lead)
 
 Omer Yurekli
 
@@ -104,3 +103,18 @@ make lint # Run in the root of the directory
 ```
 
 ## Database Modifications
+
+### Regional Classification for Customers  
+- The `Customers` table was updated to assign a `Region` value based on the customer's `Country`.  
+- Example assignments include:  
+  - UK & Ireland → *British Isles*  
+  - USA & Canada → *North America*  
+  - Mexico → *Central America*  
+  - Brazil, Argentina, Venezuela → *South America*  
+  - Poland → *Eastern Europe*  
+  - Sweden & Denmark → *Northern Europe*  
+  - Spain, Italy, Portugal → *Southern Europe*  
+
+### Enhancements to Existing Tables  
+- The `Categories` table now includes images stored as `BLOB` data for product classification.  
+- Additional structural or data integrity improvements may have been made across other tables.
