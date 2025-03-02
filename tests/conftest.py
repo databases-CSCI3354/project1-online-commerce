@@ -145,3 +145,67 @@ def cleanup_db(app):
         if hasattr(g, "db"):
             g.db.execute("DELETE FROM Shopping_Cart")
             g.db.commit()
+
+
+@pytest.fixture
+def mock_user():
+    """Create a mock user for testing authentication."""
+    return Mock(
+        id=1,
+        username="testuser",
+        customer_id=1,
+        hashed_password="hashed_password"
+    )
+
+@pytest.fixture
+def login_user(client, mock_user):
+    """Simulate a logged-in user for tests that require authentication."""
+    with patch('app.models.user.User.validate', return_value=mock_user):
+        with patch('flask_login.utils._get_user', return_value=mock_user):
+            client.post('/login', data={
+                'username': 'testuser',
+                'password': 'password'
+            })
+            yield mock_user
+
+@pytest.fixture
+def mock_bcrypt():
+    """Mock the bcrypt password hashing functionality."""
+    with patch('app.models.user.bcrypt') as mock:
+        mock.check_password_hash.return_value = True
+        mock.generate_password_hash.return_value = "hashed_password"
+        yield mock
+
+@pytest.fixture
+def mock_cart_item():
+    """Create a mock cart item for testing cart functionality."""
+    return Mock(
+        ProductID=1,
+        ProductName="Test Product",
+        UnitPrice=10.0,
+        Quantity=2,
+        TotalPrice=20.0
+    )
+
+@pytest.fixture
+def mock_cart_service():
+    """Create a mock cart service for testing cart functionality."""
+    service = Mock()
+    service.get_cart_items.return_value = [
+        Mock(
+            ProductID=1,
+            ProductName="Test Product",
+            UnitPrice=10.0,
+            Quantity=2,
+            TotalPrice=20.0
+        )
+    ]
+    service.get_cart_total.return_value = 20.0
+    return service
+
+@pytest.fixture
+def mock_order_service():
+    """Create a mock order service for testing order functionality."""
+    service = Mock()
+    service.create_order.return_value = 1  # Order ID
+    return service

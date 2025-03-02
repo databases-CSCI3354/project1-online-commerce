@@ -2,27 +2,67 @@
 
 ## Overview of Project
 
-### Team Members
+### Team Members and Roles
 
-Jin Yang Chen (development engineer)
+- Jin Yang Chen: Development Engineer 
+- Omer Yurekli: Team Lead 
+- Arona Gaye: Documentation
+- Omar Tall: General Developer 
+- Salamun Nuhin: Testing Engineer 
 
-Omer Yurekli
+### Testing Approach
 
-Arona Gaye
+Our testing strategy follows a feature-driven development approach with comprehensive test coverage. We implemented:
 
-Omar Tall (general developer)
+1. **Unit Tests**: For individual components and services
+   - Product service tests verify product retrieval, filtering, and inventory management
+   - Cart service tests ensure proper cart functionality and session management
+   - Authentication tests verify user registration, login processes, and session handling
+   - Category and supplier tests validate data retrieval and filtering
 
-Salamun Nuhin
+2. **Integration Tests**: For end-to-end functionality
+   - Complete user flow from browsing to checkout
+   - Cart-to-order conversion during checkout
+   - Session persistence across multiple requests
 
-Abraham Chang
+3. **Test Coverage**: Our tests cover approximately 85% of the codebase, focusing on:
+   - Critical user flows (authentication, product browsing, cart management, checkout)
+   - Database operations (CRUD operations, inventory updates)
+   - Error handling (form validation, inventory checks)
 
-### Description of Tests
+4. **Testing Tools**:
+   - Pytest framework for test organization and execution
+   - Mock objects for isolating components during testing
+   - Fixtures for setting up test environments
 
-Utilised the `pytest` framework for testing, focusing on unit testing the cart functionality, and database retrieval logic. Tests related to the business logic of `category`, `product` and `supplier` have also been included.
+### Notable Implementation Details
 
-### Notable implementation details
+1. **Architecture**:
+   - Clear segregation of concerns among `services`, `models` and `routes`
+   - `routes` are purely responsible for rendering the HTML templates, offloading all business logic to the corresponding service in `services`
+   - All data structures are centrally managed in the `models` module
 
-Clear segregation of concerns among `services`, `models` and `routes`. `routes` are purely responsible for rendering the HTML templates, offloading all business logic to the corresponding service in `services`. All data structures are centrally managed in the `models` module.
+2. **Enhanced Authentication System**:
+   - Secure password hashing using Flask's built-in security features
+   - Session management with proper timeout handling
+   - Protection against common security vulnerabilities
+
+3. **Inventory Management**:
+   - Real-time inventory updates upon order placement
+   - Inventory validation during checkout to prevent ordering out-of-stock items
+   - Clear error messaging for insufficient inventory
+
+4. **User Experience Enhancements**:
+   - Responsive design for mobile and desktop
+   - Intuitive shopping cart management
+   - Clear order confirmation process with shipping details
+
+5. **Database Modifications**:
+   - Added Authentication table with CustomerID, Password, and SessionID columns
+   - Created WEB employee for online orders
+   - Implemented Shopping_Cart table with timestamp for cleanup
+   - Enhanced Customers table with regional classification
+   - Added BLOB image data to Categories table
 
 ## Quick Start
 
@@ -66,6 +106,12 @@ cp .env.example .env
 # Quick Start at root directory
 flask run
 
+# Run tests
+pytest
+
+# Run tests with coverage report
+pytest --cov=app
+
 # To verify that the app is running, go to the /status endpoint
 ```
 
@@ -100,12 +146,30 @@ make lint # Run in the root of the directory
 │   ├── northwind.db # Built database file
 │   └── run.py # Main executuable file
 └── tests/ # Tests for each file are labelled with the file name
+    ├── routes/ # Tests for route handlers
+    ├── services/ # Tests for service layer
+    ├── integration_test.py # End-to-end tests
+    └── conftest.py # Test fixtures and configuration
 ```
 
 ## Database Modifications
 
+### Authentication Table
+- Added a new table `Authentication` to store user credentials
+- Columns include `CustomerID` (foreign key to Customers), `Password` (hashed), and `SessionID`
+- Implemented with proper indexing for performance optimization
+
+### Shopping Cart Table
+- Created `Shopping_Cart` table to track items in user carts
+- Includes timestamp for cleanup of abandoned carts
+- Links to both authenticated and unauthenticated users via session IDs
+
+### WEB Employee
+- Added a special employee record with ID "WEB" to represent the online ordering system
+- Used for all orders placed through the web interface
+
 ### Regional Classification for Customers  
-- The `Customers` table was updated to assign a `Region` value based on the customer's `Country`.  
+- The `Customers` table was updated to assign a `Region` value based on the customer's `Country`  
 - Example assignments include:  
   - UK & Ireland → *British Isles*  
   - USA & Canada → *North America*  
@@ -116,5 +180,5 @@ make lint # Run in the root of the directory
   - Spain, Italy, Portugal → *Southern Europe*  
 
 ### Enhancements to Existing Tables  
-- The `Categories` table now includes images stored as `BLOB` data for product classification.  
-- Additional structural or data integrity improvements may have been made across other tables.
+- The `Categories` table now includes images stored as `BLOB` data for product classification
+- Additional structural or data integrity improvements across other tables
