@@ -92,15 +92,32 @@ def checkout():
 @login_required
 def choose_shipping():
     if request.method == "POST":
-        shipping_method = request.form.get("shipping_method")
-        session['shipping_method'] = shipping_method
-        return redirect(url_for("product.confirm_order"))
+        # Get form data from checkout page
+        address = request.form.get("address")
+        payment_method = request.form.get("payment_method")
+        
+        # Store in session
+        session['address'] = address
+        session['payment_method'] = payment_method
+        
+        return render_template("product/choose_shipping.html")
+    
+    # Check if we have the required data from the checkout page
+    if 'address' not in session or 'payment_method' not in session:
+        flash("Please complete the checkout form first", "error")
+        return redirect(url_for("product.checkout"))
     
     return render_template("product/choose_shipping.html")
 
 @product_bp.route("/confirm_order", methods=["GET", "POST"])
 @login_required
 def confirm_order():
+    if request.method == "POST":
+        # Get shipping method from form
+        shipping_method = request.form.get("shipping_method")
+        session['shipping_method'] = shipping_method
+    
+    # Check if we have all the required information
     address = session.get('address')
     payment_method = session.get('payment_method')
     shipping_method = session.get('shipping_method')
@@ -110,6 +127,15 @@ def confirm_order():
         return redirect(url_for("product.checkout"))
     
     # Here you would handle the order confirmation logic, such as saving the order to the database
+    
+    # Clear cart and session data after successful order
+    cart_service = CartService()
+    cart_service.clear_cart()
+    
+    # Clear session data
+    session.pop('address', None)
+    session.pop('payment_method', None)
+    session.pop('shipping_method', None)
     
     flash("Order confirmed! Thank you for your purchase.", "success")
     return redirect(url_for("main.index"))
