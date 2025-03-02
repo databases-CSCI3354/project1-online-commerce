@@ -1,40 +1,74 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopping Cart</title>
-</head>
+{% block title %}Shopping Cart{% endblock %}
 
-<body>
-    <h1>Your Shopping Cart</h1>
-    {% if cart.items %}
-    <table>
-        <thead>
-            <tr>
-                <th>Product Name</th>
-                <th>Quantity</th>
-                <th>Unit Price</th>
-                <th>Total Price</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in cart.items.values() %}
-            <tr>
-                <td>{{ item.ProductName }}</td>
-                <td>{{ item.Quantity }}</td>
-                <td>{{ item.UnitPrice }}</td>
-                <td>{{ item.TotalPrice }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <h2>Total: {{ cart_total }}</h2>
-    <a href="{{ url_for('product.checkout') }}">Proceed to Checkout</a>
-    {% else %}
-    <p>Your cart is empty.</p>
-    {% endif %}
-</body>
+{% block content %}
+<div class="container mx-auto px-4">
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-lg mb-6">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <a href="{{ url_for('main.index') }}" class="flex-shrink-0 flex items-center">
+                        <span class="text-xl font-bold">Store</span>
+                    </a>
+                </div>
+                <div class="flex items-center">
+                    {% if current_user.is_authenticated %}
+                        <span class="mr-4">Welcome, {{ current_user.username }}</span>
+                        <a href="{{ url_for('auth.logout') }}" class="text-gray-600 hover:text-gray-900">Logout</a>
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="text-gray-600 hover:text-gray-900">Login</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
 
-</html>
+    <!-- Cart Content -->
+    <div class="bg-white shadow-lg rounded-lg p-6">
+        <h1 class="text-2xl font-bold mb-6">Your Shopping Cart</h1>
+        {% if cart and cart.items %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product Name</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit Price</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Price</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for item in cart.items.values() %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ item.ProductName }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ item.Quantity }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${{ "%.2f"|format(item.UnitPrice) }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${{ "%.2f"|format(item.TotalPrice) }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <form action="{{ url_for('product.remove_from_cart', product_id=item.ProductID) }}" method="POST" class="inline">
+                                    <button type="submit" class="text-red-600 hover:text-red-900">Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-6 flex justify-between items-center">
+                <h2 class="text-xl font-bold">Total: ${{ "%.2f"|format(cart_total) }}</h2>
+                <a href="{{ url_for('product.checkout') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Proceed to Checkout
+                </a>
+            </div>
+        {% else %}
+            <p class="text-gray-600">Your cart is empty.</p>
+            <a href="{{ url_for('main.index') }}" class="mt-4 inline-block text-blue-600 hover:text-blue-800">
+                Continue Shopping
+            </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

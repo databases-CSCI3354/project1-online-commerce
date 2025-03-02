@@ -12,9 +12,30 @@
 </head>
 <body>
   <nav class="bg-blue-600 text-white p-4 flex justify-between items-center">
-    <h1 class="text-2xl font-bold">Walmart</h1>
-    <ul class="flex gap-4">
-      <li><a href="{{ url_for('product.checkout') }}" class="cart-link hover:text-yellow-300">🛒 Cart</a></li>
+    <div class="flex items-center">
+      <a href="{{ url_for('main.index') }}" class="text-2xl font-bold">Walmart</a>
+    </div>
+    <ul class="flex gap-4 items-center">
+      <li>
+        <a href="{{ url_for('product.view_cart') }}" class="cart-link hover:text-yellow-300">
+          🛒 Cart
+          {% if cart and cart.items %}
+            <span class="bg-yellow-300 text-blue-600 px-2 py-1 rounded-full text-xs ml-1">
+              {{ cart.items|length }}
+            </span>
+          {% endif %}
+        </a>
+      </li>
+      {% if current_user.is_authenticated %}
+        <li>
+          <span class="mr-2">Welcome, {{ current_user.username }}</span>
+          <a href="{{ url_for('auth.logout') }}" class="hover:text-yellow-300">Logout</a>
+        </li>
+      {% else %}
+        <li>
+          <a href="{{ url_for('auth.login') }}" class="hover:text-yellow-300">Login</a>
+        </li>
+      {% endif %}
     </ul>
   </nav>
 
@@ -25,13 +46,14 @@
 
     <!-- Flash Messages -->
     {% for message in get_flashed_messages() %}
-    <div class="flash">{{ message }}</div>
+    <div class="flash bg-blue-100 border-blue-500 text-blue-700 px-4 py-3 rounded relative" role="alert">
+      {{ message }}
+    </div>
     {% endfor %}
 
     {% block content %}{% endblock %}
   </section>
 </body>
-
 </html>
 
 <style>
@@ -54,6 +76,7 @@ nav ul {
   padding: 0;
   display: flex;
   gap: 1rem;
+  align-items: center;
 }
 
 .cart-link {
@@ -66,5 +89,11 @@ nav ul {
 
 .cart-link:hover {
   color: #ffc220;
+}
+
+.flash {
+  margin: 1em 0;
+  padding: 1em;
+  border-radius: 0.25rem;
 }
 </style>

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Choose Shipping{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto p-6">
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+        <div class="p-8">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Choose Shipping</h2>
+
+            <form action="{{ url_for('product.confirm_order') }}" method="POST">
+                <div class="mb-4">
+                    <label for="shipping_method" class="block text-sm font-medium text-gray-700">Shipping Method</label>
+                    <select name="shipping_method" id="shipping_method" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                        <option value="standard">Standard Shipping</option>
+                        <option value="express">Express Shipping</option>
+                    </select>
+                </div>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Confirm Order
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

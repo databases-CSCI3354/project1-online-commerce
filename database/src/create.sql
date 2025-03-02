@@ -1,4 +1,4 @@
--- DATABASE : Northwind 
+database\src-- DATABASE : Northwind 
 -- ORIGIN   : MS SQL 
 -- SOURCE   : SQLITE 3
 -- 
@@ -6,6 +6,23 @@
 -- 
 
 PRAGMA foreign_keys=off;
+
+-- Add Users table that references Customers
+CREATE TABLE IF NOT EXISTS Users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    customer_id TEXT NOT NULL,
+    username TEXT UNIQUE NOT NULL, 
+    hashed_password TEXT NOT NULL,
+    FOREIGN KEY (customer_id) REFERENCES Customers(CustomerID)
+);
+
+-- Insert initial users from Customers
+INSERT INTO Users (customer_id, username, hashed_password)
+SELECT 
+    CustomerID,
+    LOWER(ContactName), -- Use contact name as username (converted to lowercase)
+    '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewFJWQQFXZs.5HZi' -- Default hashed password: 'password'
+FROM Customers;
 
 -- Categories
 DROP TABLE IF EXISTS [Categories];

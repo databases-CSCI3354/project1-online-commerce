@@ -1,6 +1,6 @@
 from typing import Optional
 
-from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
+from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for, session
 from werkzeug.wrappers.response import Response
 
 from app.models.cart import CartItem
@@ -67,14 +67,44 @@ def add_to_cart(product_id) -> Response:
     return redirect(url_for("product.index", product_id=product_id))
 
 
-@product_bp.route("/checkout")
+@product_bp.route("/checkout", methods=["GET", "POST"])
 def checkout():
+    if request.method == "POST":
+        address = request.form.get("address")
+        payment_method = request.form.get("payment_method")
+        session['address'] = address
+        session['payment_method'] = payment_method
+        return redirect(url_for("product.choose_shipping"))
+    
     cart = get_cart()
     if not cart:
         return jsonify({"error": "Cart is empty"}), 400
     cart_total = sum(item.TotalPrice for item in cart.items.values())
     return render_template("product/checkout.html", cart=cart, cart_total=cart_total)
 
+@product_bp.route("/choose_shipping", methods=["GET", "POST"])
+def choose_shipping():
+    if request.method == "POST":
+        shipping_method = request.form.get("shipping_method")
+        session['shipping_method'] = shipping_method
+        return redirect(url_for("product.confirm_order"))
+    
+    return render_template("product/choose_shipping.html")
+
+@product_bp.route("/confirm_order", methods=["GET", "POST"])
+def confirm_order():
+    address = session.get('address')
+    payment_method = session.get('payment_method')
+    shipping_method = session.get('shipping_method')
+    
+    if not address or not payment_method or not shipping_method:
+        flash("Missing order information. Please try again.", "error")
+        return redirect(url_for("product.checkout"))
+    
+    # Here you would handle the order confirmation logic, such as saving the order to the database
+    
+    flash("Order confirmed! Thank you for your purchase.", "success")
+    return redirect(url_for("main.index"))
 
 @product_bp.route("/cart/remove/<int:product_id>", methods=["POST"])
 def remove_from_cart(product_id):
@@ -82,3 +112,9 @@ def remove_from_cart(product_id):
     cart_service.remove_from_cart(product_id)
     flash("Item removed from cart successfully!", "success")
     return redirect(url_for("product.checkout"))
+
+@product_bp.route("/cart")
+def view_cart():
+    cart = get_cart()
+    cart_total = sum(item.TotalPrice for item in cart.items.values()) if cart else 0
+    return render_template("product/cart.html", cart=cart, cart_total=cart_total)

@@ -2,10 +2,12 @@ import os
 import secrets
 
 from flask import Flask
+from flask_login import LoginManager
 
-from app.routes import init_app
+from app.routes import init_app, auth, main, product
 from app.utils.database import close_db
 from app.utils.init_db import init_db
+from app.models.user import User  # You'll need to create this
 
 
 def create_app():
@@ -24,4 +26,19 @@ def create_app():
 
     app.teardown_appcontext(close_db)
     init_app(app=app)
+
+    # Initialize Flask-Login
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+    login_manager.login_view = 'auth.login'
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.get(user_id)  # Implement this method in your User model
+
+    # Register blueprints
+    app.register_blueprint(auth.auth_bp)
+    app.register_blueprint(main.main_bp)
+    app.register_blueprint(product.product_bp, url_prefix='/product')
+
     return app
