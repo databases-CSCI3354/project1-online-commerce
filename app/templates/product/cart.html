@@ -45,7 +45,7 @@
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap">{{ item.ProductName }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{{ item.Quantity }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">${{ "%.2f"|format(item.UnitPrice) }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${{ "%.2f"|format(item.TotalPrice / item.Quantity) }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">${{ "%.2f"|format(item.TotalPrice) }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <form action="{{ url_for('product.remove_from_cart', product_id=item.ProductID) }}" method="POST" class="inline">

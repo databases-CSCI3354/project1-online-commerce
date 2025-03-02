@@ -10,7 +10,6 @@
 <body>
     <h1>Register</h1>
     <form method="POST" action="{{ url_for('auth.register') }}">
-        {{ form.hidden_tag() }}
         <div>
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" required>
@@ -18,6 +17,11 @@
         <div>
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
+        </div>
+        <div>
+            <label for="customer_id">Customer ID:</label>
+            <input type="text" id="customer_id" name="customer_id" required>
+            <small>Enter your Customer ID (e.g., ALFKI, ANATR, etc.)</small>
         </div>
         <div>
             <button type="submit">Register</button>

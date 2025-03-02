@@ -39,7 +39,7 @@ class User(UserMixin):
         return None
 
     @staticmethod
-    def get_by_id(user_id):
+    def get(user_id):
         db = User.get_db()
         user = db.execute(
             'SELECT id, username, customer_id, hashed_password FROM Users WHERE id = ?',

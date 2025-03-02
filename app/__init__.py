@@ -4,7 +4,8 @@ import secrets
 from flask import Flask
 from flask_login import LoginManager
 
-from app.routes import init_app, auth, main, product
+from app.routes import init_app
+from app.routes.auth import auth_bp
 from app.utils.database import close_db
 from app.utils.init_db import init_db
 from app.models.user import User  # You'll need to create this
@@ -36,9 +37,7 @@ def create_app():
     def load_user(user_id):
         return User.get(user_id)  # Implement this method in your User model
 
-    # Register blueprints
-    app.register_blueprint(auth.auth_bp)
-    app.register_blueprint(main.main_bp)
-    app.register_blueprint(product.product_bp, url_prefix='/product')
+    # Register auth blueprint
+    app.register_blueprint(auth_bp)
 
     return app

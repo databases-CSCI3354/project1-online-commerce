@@ -38,44 +38,50 @@ def login():
     
     return render_template('auth/login.html')
 
-@auth_bp.route("/register", methods=["POST"])
+@auth_bp.route("/register", methods=["GET", "POST"])
 def register():
-    data = request.get_json()
-    username = data.get('username')
-    password = data.get('password')
-    customer_id = data.get('customer_id')
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        customer_id = request.form.get('customer_id')
 
-    if not customer_id:
-        return jsonify({"error": "Customer ID is required"}), 400
+        if not username or not password or not customer_id:
+            flash("All fields are required", "error")
+            return render_template('auth/register.html')
 
-    db = g.get_db()
-    try:
-        # Check if customer exists
-        customer = db.execute(
-            'SELECT CustomerID FROM Customers WHERE CustomerID = ?',
-            [customer_id]
-        ).fetchone()
+        db = get_db()
+        try:
+            # Check if customer exists
+            customer = db.execute(
+                'SELECT CustomerID FROM Customers WHERE CustomerID = ?',
+                [customer_id]
+            ).fetchone()
 
-        if not customer:
-            return jsonify({"error": "Invalid Customer ID"}), 400
+            if not customer:
+                flash("Invalid Customer ID", "error")
+                return render_template('auth/register.html')
 
-        # Create new user
-        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-        db.execute(
-            'INSERT INTO Users (customer_id, username, hashed_password) VALUES (?, ?, ?)',
-            (customer_id, username.lower(), hashed_password)
-        )
-        db.commit()
+            # Create new user
+            hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+            db.execute(
+                'INSERT INTO Users (customer_id, username, hashed_password) VALUES (?, ?, ?)',
+                (customer_id, username.lower(), hashed_password)
+            )
+            db.commit()
+            
+            flash("Registration successful! Please log in.", "success")
+            return redirect(url_for('auth.login'))
 
-    except sqlite3.IntegrityError:
-        return jsonify({"error": "Username already exists"}), 400
+        except sqlite3.IntegrityError:
+            flash("Username already exists or Customer ID already registered", "error")
+            return render_template('auth/register.html')
 
-    return jsonify({"message": "User registered successfully"})
+    return render_template('auth/register.html')
 
 @auth_bp.route("/profile")
 @login_required 
 def profile():
-    db = g.get_db()
+    db = get_db()
     customer = db.execute(
         'SELECT * FROM Customers WHERE CustomerID = ?',
         [current_user.customer_id]

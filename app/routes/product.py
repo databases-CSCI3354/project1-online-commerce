@@ -2,6 +2,7 @@ from typing import Optional
 
 from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for, session
 from werkzeug.wrappers.response import Response
+from flask_login import login_required, current_user
 
 from app.models.cart import CartItem
 from app.models.category import Category
@@ -12,6 +13,7 @@ from app.services.category import CategoryService
 from app.services.product import ProductService
 from app.services.supplier import SupplierService
 from app.utils.logger import setup_logger
+from app.utils.database import get_db
 
 product_bp = Blueprint("product", __name__)
 
@@ -69,20 +71,25 @@ def add_to_cart(product_id) -> Response:
 
 @product_bp.route("/checkout", methods=["GET", "POST"])
 def checkout():
+    cart = get_cart()
+    if not cart or not cart.items:
+        flash("Your cart is empty", "error")
+        return redirect(url_for("main.index"))
+    
+    cart_total = sum(item.TotalPrice for item in cart.items.values())
+    
     if request.method == "POST":
-        address = request.form.get("address")
-        payment_method = request.form.get("payment_method")
-        session['address'] = address
-        session['payment_method'] = payment_method
+        if not current_user.is_authenticated:
+            flash("Please log in to complete your purchase", "error")
+            return redirect(url_for("auth.login"))
+        
+        # Process checkout
         return redirect(url_for("product.choose_shipping"))
     
-    cart = get_cart()
-    if not cart:
-        return jsonify({"error": "Cart is empty"}), 400
-    cart_total = sum(item.TotalPrice for item in cart.items.values())
     return render_template("product/checkout.html", cart=cart, cart_total=cart_total)
 
 @product_bp.route("/choose_shipping", methods=["GET", "POST"])
+@login_required
 def choose_shipping():
     if request.method == "POST":
         shipping_method = request.form.get("shipping_method")
@@ -92,6 +99,7 @@ def choose_shipping():
     return render_template("product/choose_shipping.html")
 
 @product_bp.route("/confirm_order", methods=["GET", "POST"])
+@login_required
 def confirm_order():
     address = session.get('address')
     payment_method = session.get('payment_method')

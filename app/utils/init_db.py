@@ -16,13 +16,23 @@ def init_db(app):
         # Create tables
         db.executescript(
             """
-            -- Create Authentication table
-            CREATE TABLE IF NOT EXISTS Authentication (
-                UserID TEXT PRIMARY KEY,
-                PasswordHash TEXT NOT NULL,
-                SessionID TEXT UNIQUE,
-                FOREIGN KEY (UserID) REFERENCES Customers(CustomerID)
+            -- Create Users table that references Customers
+            CREATE TABLE IF NOT EXISTS Users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                customer_id TEXT NOT NULL,
+                username TEXT UNIQUE NOT NULL, 
+                hashed_password TEXT NOT NULL,
+                FOREIGN KEY (customer_id) REFERENCES Customers(CustomerID)
             );
+
+            -- Insert initial users from Customers if the table is empty
+            INSERT OR IGNORE INTO Users (customer_id, username, hashed_password)
+            SELECT 
+                CustomerID,
+                LOWER(ContactName), -- Use contact name as username (converted to lowercase)
+                '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewFJWQQFXZs.5HZi' -- Default hashed password: 'password'
+            FROM Customers
+            WHERE NOT EXISTS (SELECT 1 FROM Users WHERE customer_id = CustomerID);
 
             -- Create Shopping_Cart table
             CREATE TABLE IF NOT EXISTS Shopping_Cart (
