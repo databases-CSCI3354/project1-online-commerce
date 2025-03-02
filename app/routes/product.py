@@ -126,10 +126,18 @@ def confirm_order():
         flash("Missing order information. Please try again.", "error")
         return redirect(url_for("product.checkout"))
     
+    # Get cart for order total
+    cart_service = CartService()
+    cart = get_cart()
+    cart_total = sum(item.TotalPrice for item in cart.items.values())
+    
+    # Generate a simple order ID (in a real app, this would come from the database)
+    import random
+    order_id = random.randint(10000, 99999)
+    
     # Here you would handle the order confirmation logic, such as saving the order to the database
     
     # Clear cart and session data after successful order
-    cart_service = CartService()
     cart_service.clear_cart()
     
     # Clear session data
@@ -137,8 +145,13 @@ def confirm_order():
     session.pop('payment_method', None)
     session.pop('shipping_method', None)
     
-    flash("Order confirmed! Thank you for your purchase.", "success")
-    return redirect(url_for("main.index"))
+    # Render the order confirmation template with order details
+    return render_template(
+        "product/order_confirmation.html",
+        order_id=order_id,
+        order_total=cart_total,
+        shipping_method=shipping_method
+    )
 
 @product_bp.route("/cart/remove/<int:product_id>", methods=["POST"])
 def remove_from_cart(product_id):
