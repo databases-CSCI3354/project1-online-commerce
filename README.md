@@ -1,13 +1,13 @@
-# Online Commerce
+# Databases Project 1 - Professor Aviram
 
 ## Overview of Project
 
 ### Team Members and Roles
 
-- Jin Yang Chen: Development Engineer 
 - Omer Yurekli: Team Lead 
+- Jin Yang Chen: Development Engineer 
+- Omar Tall: Development Engineer 
 - Arona Gaye: Documentation
-- Omar Tall: General Developer 
 - Salamun Nuhin: Testing Engineer 
 
 ### Testing Approach
