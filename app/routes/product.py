@@ -146,21 +146,44 @@ def confirm_order():
     
     # Here you would handle the order confirmation logic, such as saving the order to the database
     
-    # Clear cart and session data after successful order
-    cart_service.clear_cart()
+    # Update product inventory
+    product_service = ProductService()
+    inventory_updated = True
     
-    # Clear session data
-    session.pop('address', None)
-    session.pop('payment_method', None)
-    session.pop('shipping_method', None)
+    # First check if all products have enough inventory
+    for item in cart.items.values():
+        product = product_service.get_product_by_id(item.ProductID)
+        if not product or product.UnitsInStock < item.Quantity:
+            flash(f"Sorry, {item.ProductName} is no longer available in the requested quantity.", "error")
+            inventory_updated = False
+            break
     
-    # Render the order confirmation template with order details
-    return render_template(
-        "product/order_confirmation.html",
-        order_id=order_id,
-        order_total=cart_total,
-        shipping_method=formatted_shipping_method
-    )
+    # If all inventory checks pass, update the inventory
+    if inventory_updated:
+        for item in cart.items.values():
+            if not product_service.update_product_inventory(item.ProductID, item.Quantity):
+                # If any update fails, show an error
+                flash("There was an issue processing your order. Please try again.", "error")
+                return redirect(url_for("product.checkout"))
+        
+        # Clear cart and session data after successful order
+        cart_service.clear_cart()
+        
+        # Clear session data
+        session.pop('address', None)
+        session.pop('payment_method', None)
+        session.pop('shipping_method', None)
+        
+        # Render the order confirmation template with order details
+        return render_template(
+            "product/order_confirmation.html",
+            order_id=order_id,
+            order_total=cart_total,
+            shipping_method=formatted_shipping_method
+        )
+    else:
+        # If inventory check failed, redirect back to cart
+        return redirect(url_for("product.view_cart"))
 
 @product_bp.route("/cart/remove/<int:product_id>", methods=["POST"])
 def remove_from_cart(product_id):

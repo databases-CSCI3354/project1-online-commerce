@@ -66,3 +66,36 @@ class ProductService:
             Product.model_validate(dict(zip(self.columns, row))) for row in self.cursor.fetchall()
         ]
         return products
+
+    def update_product_inventory(self, product_id: int, quantity: int) -> bool:
+        """Update product inventory by decreasing the UnitsInStock.
+        
+        Args:
+            product_id: The ID of the product to update
+            quantity: The quantity to decrease from inventory
+            
+        Returns:
+            bool: True if update was successful, False otherwise
+        """
+        try:
+            # First check if there's enough inventory
+            product = self.get_product_by_id(product_id)
+            if not product or product.UnitsInStock < quantity:
+                log.error(f"Not enough inventory for product {product_id}. Available: {product.UnitsInStock if product else 0}, Requested: {quantity}")
+                return False
+                
+            # Update the inventory
+            self.cursor.execute(
+                """
+                UPDATE Products 
+                SET UnitsInStock = UnitsInStock - ? 
+                WHERE ProductID = ?
+                """, 
+                (quantity, product_id)
+            )
+            get_db().commit()
+            log.info(f"Updated inventory for product {product_id}. New stock: {product.UnitsInStock - quantity}")
+            return True
+        except Exception as e:
+            log.error(f"Error updating product inventory: {e}")
+            return False
