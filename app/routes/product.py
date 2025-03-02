@@ -126,6 +126,15 @@ def confirm_order():
         flash("Missing order information. Please try again.", "error")
         return redirect(url_for("product.checkout"))
     
+    # Format shipping method for display
+    formatted_shipping_method = shipping_method
+    if shipping_method.lower() == "express":
+        formatted_shipping_method = "Express (Overnight)"
+    elif shipping_method.lower() == "standard":
+        formatted_shipping_method = "Standard Shipping (5-7 business days)"
+    elif shipping_method.lower() == "priority":
+        formatted_shipping_method = "Priority (2-3 business days)"
+    
     # Get cart for order total
     cart_service = CartService()
     cart = get_cart()
@@ -150,7 +159,7 @@ def confirm_order():
         "product/order_confirmation.html",
         order_id=order_id,
         order_total=cart_total,
-        shipping_method=shipping_method
+        shipping_method=formatted_shipping_method
     )
 
 @product_bp.route("/cart/remove/<int:product_id>", methods=["POST"])
