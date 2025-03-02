@@ -27,13 +27,13 @@
         </a>
       </li>
       {% if current_user.is_authenticated %}
-        <li>
-          <span class="mr-2">Welcome, {{ current_user.username }}</span>
-          <a href="{{ url_for('auth.logout') }}" class="hover:text-yellow-300">Logout</a>
+        <li class="flex items-center">
+          <span class="mr-3">Welcome, {{ current_user.username }}</span>
+          <a href="{{ url_for('auth.logout') }}" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md transition duration-300">Logout</a>
         </li>
       {% else %}
         <li>
-          <a href="{{ url_for('auth.login') }}" class="hover:text-yellow-300">Login</a>
+          <a href="{{ url_for('auth.login') }}" class="bg-yellow-400 hover:bg-yellow-500 text-blue-800 px-3 py-1 rounded-md transition duration-300">Login</a>
         </li>
       {% endif %}
     </ul>
