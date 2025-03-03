@@ -7,8 +7,8 @@
 - Omer Yurekli: Team Lead 
 - Jin Yang Chen: Development Engineer 
 - Omar Tall: General Developer
-- Arona Gaye: Documentation
-- Salamun Nuhin: Testing Engineer and Development Engineer
+- Arona Gaye: Testing Engineer
+- Salamun Nuhin: Development Engineer
 
 ### Testing Approach
 
