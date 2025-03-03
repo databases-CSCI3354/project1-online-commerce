@@ -8,7 +8,7 @@
 - Jin Yang Chen: Development Engineer 
 - Omar Tall: Development Engineer 
 - Arona Gaye: Documentation
-- Salamun Nuhin: Testing Engineer 
+- Salamun Nuhin: Testing Engineer and Development Engineer
 
 ### Testing Approach
 
