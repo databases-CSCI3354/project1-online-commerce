@@ -43,26 +43,32 @@ jobs:
           curl -sSL https://install.python-poetry.org | python3 -
 
       - name: Install dependencies
+        working-directory: ./P1
         run: |
           poetry install --no-interaction --no-root
 
       - name: Run pytest
+        working-directory: ./P1
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)
           poetry run pytest
 
       - name: Run isort
+        working-directory: ./P1
         run: |
           poetry run isort --check-only --diff .
 
       - name: Run black
+        working-directory: ./P1
         run: |
           poetry run black --check --diff .
 
       - name: Run Mypy
+        working-directory: ./P1
         run: |
           poetry run mypy .
 
       - name: Run Pylint
+        working-directory: ./P1
         run: |
           poetry run pylint **/*.py
