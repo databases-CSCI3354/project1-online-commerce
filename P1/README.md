@@ -99,7 +99,9 @@ eval "$(poetry env activate)"
 # Create .env file (by copying from .env.example)
 cp .env.example .env
 ```
-
+```Install the flask_bcrypt module
+pip install flask-bcrypt
+```
 ## Commands
 
 ```bash
