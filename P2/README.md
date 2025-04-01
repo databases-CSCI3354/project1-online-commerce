@@ -3,6 +3,7 @@
 ## Team Members and Roles
 
 - Jin Yang Chen: ER Diagram and Write-Up
+- Salamun Nuhin: schema.txt
 
 ### Decisions made when representing the activity_group entity
 
