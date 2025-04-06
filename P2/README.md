@@ -4,6 +4,7 @@
 
 - Jin Yang Chen: ER Diagram and Write-Up
 - Salamun Nuhin: schema.txt
+- Omer Yurekli: SQL code
 
 ### Decisions made when representing the activity_group entity
 
