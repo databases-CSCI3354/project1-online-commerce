@@ -12,8 +12,7 @@ Entity: resident
 
 
 Entity: activity_group
-- group_id INTEGER PRIMARY KEY
-- name TEXT UNIQUE NOT NULL
+- name TEXT PRIMARY KEY
 - category TEXT
 - description TEXT
 - founding_date TEXT
@@ -32,7 +31,7 @@ Entity: activity_group
 Entity: review
 - review_id INTEGER PRIMARY KEY
 - resident_id INTEGER NOT NULL REFERENCES resident(resident_id)
-- group_id INTEGER NOT NULL REFERENCES activity_group(group_id)
+- activity_group_name TEXT NOT NULL REFERENCES activity_group(name)
 - content TEXT
 - star_rating INTEGER CHECK (star_rating BETWEEN 1 AND 5)
 - review_date TEXT
@@ -41,7 +40,7 @@ Entity: review
 
 Entity: event
 - event_id INTEGER PRIMARY KEY
-- group_id INTEGER NOT NULL REFERENCES activity_group(group_id)
+- activity_group_name TEXT NOT NULL REFERENCES activity_group(name)
 - date TEXT NOT NULL
 - location_id INTEGER REFERENCES location(location_id)
 - max_participants INTEGER
@@ -52,7 +51,7 @@ Entity: event
 
 Entity: session
 - session_id INTEGER PRIMARY KEY
-- group_id INTEGER NOT NULL REFERENCES activity_group(group_id)
+- activity_group_name TEXT NOT NULL REFERENCES activity_group(name)
 - event_id INTEGER REFERENCES event(event_id)
 - date TEXT
 - attendance INTEGER
@@ -69,7 +68,7 @@ Entity: location
 ASSOCIATIVE ENTITIES:
 
 Entity: member (associative)
-- resident_id INTEGER REFERENCES resident(id)
+- resident_id INTEGER REFERENCES resident(resident_id)
 - activity_group_name TEXT REFERENCES activity_group(name)
 - join_date TEXT
 - role TEXT
@@ -77,12 +76,12 @@ Entity: member (associative)
 
 Entity: hosts (associative)
 - activity_group_name TEXT REFERENCES activity_group(name)
-- session_id INTEGER REFERENCES session(id)
+- session_id INTEGER REFERENCES session(session_id)
 - PRIMARY KEY (activity_group_name, session_id)
 
 Entity: prerequisite (associative, self-referencing)
-- event_id INTEGER REFERENCES event(id)
-- prerequisite_event_id INTEGER REFERENCES event(id)
+- event_id INTEGER REFERENCES event(event_id)
+- prerequisite_event_id INTEGER REFERENCES event(event_id)
 - minimum_performance INTEGER
 - qualification_period INTEGER
 - is_waiver_allowed BOOLEAN
@@ -94,7 +93,7 @@ Constraints:
 UNIQUE CONSTRAINTS
    - resident.email is UNIQUE.
    - resident.phone_number is UNIQUE.
-   - activity_group.name is UNIQUE (since name is used as identifier).
+   - activity_group.name is UNIQUE (since name is used as identifier, also the PK).
 
 CHECK CONSTRAINTS
    - review.star_rating must be between 1 and 5.
@@ -104,9 +103,9 @@ CHECK CONSTRAINTS
 
 NOT NULL CONSTRAINTS
    - resident.name, resident.email cannot be NULL.
-   - review.resident_id, review.group_id cannot be NULL.
-   - event.group_id, event.date cannot be NULL.
-   - member.resident_id, member.group_id cannot be NULL.
+   - review.resident_id, review.activity_group_name cannot be NULL.
+   - event.activity_group_name, event.date cannot be NULL.
+   - member.resident_id, member.activity_group_name cannot be NULL.
 
 BOOLEAN FIELDS (Stored as INTEGER 0 or 1)
    - is_active, is_verified, open_to_public, registration_required, is_waiver_allowed

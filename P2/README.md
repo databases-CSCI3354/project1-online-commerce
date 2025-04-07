@@ -30,3 +30,18 @@ We notice that some events are pre-requisites of others. After speaking with one
 ### Decisions made when representing the session entity
 
 It felt reasonable to differentiate normal, routine sessions of activity groups from their highlight events. Members of the activity group might want to check the agenda of each session before deciding whether or not to participate in a particular session. We felt that the most intuitive way to represent the session is a weak entity, whose existence is dependent on activity_group as its identifying entity. With the session number serving as the discriminator, we can uniquely identify the session via the activity group’s name
+
+
+### Normalization & Functional Dependencies
+
+Throughout our modeling process, we ensured that all entity sets and relationship sets were normalized to at least Third Normal Form (3NF). For example, we excluded derived attributes like `age`, which can be computed from `date_of_birth`, and identified `interests` as a multivalued attribute that could be refactored into a separate table if implemented fully. 
+
+To reduce redundancy and improve query flexibility, we also extracted address details into a dedicated `location` entity, allowing multiple events to reuse the same location without duplication. 
+
+Some of the key functional dependencies that guided our design include:
+- `resident_id → name, email, date_of_birth`
+- `activity_group.name → category, description, event_frequency`
+- `event_id → activity_group_name, date, location_id`
+- `(resident_id, activity_group_name) → join_date, role`
+
+These functional dependencies and normalization decisions informed both our E-R modeling and the final relational schema, helping us ensure data consistency, avoid redundancy, and maintain referential integrity across the database.
