@@ -6,6 +6,8 @@
 - Salamun Nuhin: schema.txt
 - Omer Yurekli: SQL code
 - Omar Tall: ER Diagram and Documentation Editor
+- Arona Gaye: SQL code
+- Abraham Chang: Documentation
 
 ### Decisions made when representing the activity_group entity
 
