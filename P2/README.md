@@ -46,3 +46,7 @@ Some of the key functional dependencies that guided our design include:
 - `(resident_id, activity_group_name) → join_date, role`
 
 These functional dependencies and normalization decisions informed both our E-R modeling and the final relational schema, helping us ensure data consistency, avoid redundancy, and maintain referential integrity across the database.
+
+<img width="929" alt="Screenshot 2025-04-10 at 4 07 12 PM" src="https://github.com/user-attachments/assets/a89ee36e-1e66-4ceb-a236-549211ca6fb8" />
+
+
