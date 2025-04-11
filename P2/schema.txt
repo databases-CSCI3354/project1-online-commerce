@@ -2,113 +2,105 @@ This schema describes the Boston Area Activity Groups database, supporting resid
 
 
 Entity: resident
-- resident_id INTEGER PRIMARY KEY
+- _resident_id_ INTEGER PRIMARY KEY
 - name TEXT NOT NULL
-- email TEXT UNIQUE NOT NULL
-- phone_number TEXT UNIQUE
-- interests TEXT
+- email TEXT UNIQUE NOT NULL -- format: valid email
+- phone_number TEXT UNIQUE -- format: optional, digits with optional dashes/spaces
+- interests TEXT -- comma-separated list or JSON string of enums
 - date_of_birth TEXT -- format: YYYY-MM-DD
-- profile_image TEXT -- path or URL
-
+- profile_image TEXT -- file path or image URL
 
 Entity: activity_group
-- name TEXT PRIMARY KEY
-- category TEXT
+- _name_ TEXT PRIMARY KEY
+- category TEXT -- e.g., sports, networking, arts
 - description TEXT
-- founding_date TEXT
-- website TEXT
-- email TEXT
-- phone_number TEXT
-- social_media_links TEXT -- stored as a JSON string
-- is_active BOOLEAN DEFAULT 1
-- total_members INTEGER DEFAULT 0
-- event_frequency TEXT
-- membership_fee INTEGER
-- open_to_public BOOLEAN
-- min_age INTEGER
-
+- founding_date TEXT -- format: YYYY-MM-DD
+- website TEXT -- URL
+- email TEXT -- contact email
+- phone_number TEXT -- contact number
+- social_media_links TEXT -- stored as a JSON string, e.g. {"facebook": "...", "x": "..."}
+- is_active BOOLEAN DEFAULT 1 -- 1 = active, 0 = inactive
+- total_members INTEGER DEFAULT 0 -- auto-updated via application logic
+- event_frequency TEXT -- enum: weekly, monthly, etc.
+- membership_fee INTEGER -- amount in USD
+- open_to_public BOOLEAN -- 1 = yes, 0 = no
+- min_age INTEGER -- minimum age required to join
 
 Entity: review
-- review_id INTEGER PRIMARY KEY
-- resident_id INTEGER NOT NULL REFERENCES resident(resident_id)
-- activity_group_name TEXT NOT NULL REFERENCES activity_group(name)
+- _review_id_ INTEGER PRIMARY KEY
+- resident_id INTEGER NOT NULL REFERENCES resident(resident_id) -- FK to resident
+- activity_group_name TEXT NOT NULL REFERENCES activity_group(name) -- FK to activity_group
 - content TEXT
 - star_rating INTEGER CHECK (star_rating BETWEEN 1 AND 5)
-- review_date TEXT
-- is_verified BOOLEAN DEFAULT 0
-
+- review_date TEXT -- format: YYYY-MM-DD
+- is_verified BOOLEAN DEFAULT 0 -- 1 = verified review
 
 Entity: event
-- event_id INTEGER PRIMARY KEY
-- activity_group_name TEXT NOT NULL REFERENCES activity_group(name)
-- date TEXT NOT NULL
-- location_id INTEGER REFERENCES location(location_id)
+- _event_id_ INTEGER PRIMARY KEY
+- activity_group_name TEXT NOT NULL REFERENCES activity_group(name) -- FK to activity_group
+- date TEXT NOT NULL -- format: YYYY-MM-DD
+- location_id INTEGER REFERENCES location(location_id) -- FK to location
 - max_participants INTEGER
-- cost INTEGER
-- registration_required BOOLEAN
-- registration_deadline TEXT
-
+- cost INTEGER -- amount in USD
+- registration_required BOOLEAN -- 1 = required, 0 = open
+- registration_deadline TEXT -- format: YYYY-MM-DD
 
 Entity: session
-- session_id INTEGER PRIMARY KEY
-- activity_group_name TEXT NOT NULL REFERENCES activity_group(name)
-- event_id INTEGER REFERENCES event(event_id)
-- date TEXT
-- attendance INTEGER
+- _session_id_ INTEGER PRIMARY KEY
+- activity_group_name TEXT NOT NULL REFERENCES activity_group(name) -- FK to activity_group
+- event_id INTEGER REFERENCES event(event_id) -- FK to event (if this session is tied to an event)
+- date TEXT -- format: YYYY-MM-DD
+- attendance INTEGER -- number of attendees
 - agenda TEXT
 
-
 Entity: location
-- location_id INTEGER PRIMARY KEY
+- _location_id_ INTEGER PRIMARY KEY
 - address TEXT
 - city TEXT
 - state TEXT
-- zip_code TEXT
+- zip_code TEXT -- 5-digit ZIP
 
-ASSOCIATIVE ENTITIES:
+-- ASSOCIATIVE ENTITIES --
 
 Entity: member (associative)
-- resident_id INTEGER REFERENCES resident(resident_id)
-- activity_group_name TEXT REFERENCES activity_group(name)
-- join_date TEXT
-- role TEXT
+- resident_id INTEGER REFERENCES resident(resident_id) -- FK
+- activity_group_name TEXT REFERENCES activity_group(name) -- FK
+- join_date TEXT -- format: YYYY-MM-DD
+- role TEXT -- e.g., member, organizer, treasurer
 - PRIMARY KEY (resident_id, activity_group_name)
 
 Entity: hosts (associative)
-- activity_group_name TEXT REFERENCES activity_group(name)
-- session_id INTEGER REFERENCES session(session_id)
+- activity_group_name TEXT REFERENCES activity_group(name) -- FK
+- session_id INTEGER REFERENCES session(session_id) -- FK
 - PRIMARY KEY (activity_group_name, session_id)
 
 Entity: prerequisite (associative, self-referencing)
-- event_id INTEGER REFERENCES event(event_id)
-- prerequisite_event_id INTEGER REFERENCES event(event_id)
-- minimum_performance INTEGER
-- qualification_period INTEGER
-- is_waiver_allowed BOOLEAN
+- event_id INTEGER REFERENCES event(event_id) -- FK
+- prerequisite_event_id INTEGER REFERENCES event(event_id) -- FK
+- minimum_performance INTEGER -- performance rating or score
+- qualification_period INTEGER -- days the qualification remains valid
+- is_waiver_allowed BOOLEAN -- 1 = yes, 0 = no
 - PRIMARY KEY (event_id, prerequisite_event_id)
 
-
-Constraints:
+-- CONSTRAINTS & FORMATS --
 
 UNIQUE CONSTRAINTS
-   - resident.email is UNIQUE.
-   - resident.phone_number is UNIQUE.
-   - activity_group.name is UNIQUE (since name is used as identifier, also the PK).
+-- resident.email and resident.phone_number must be unique
+-- activity_group.name is unique and serves as PK
 
 CHECK CONSTRAINTS
-   - review.star_rating must be between 1 and 5.
-     CHECK (star_rating BETWEEN 1 AND 5)
-   - prerequisite.event_id must not equal prerequisite_event_id.
-     CHECK (event_id != prerequisite_event_id)
+-- review.star_rating must be between 1 and 5
+-- prerequisite.event_id must not equal prerequisite_event_id
+--   CHECK (event_id != prerequisite_event_id)
 
 NOT NULL CONSTRAINTS
-   - resident.name, resident.email cannot be NULL.
-   - review.resident_id, review.activity_group_name cannot be NULL.
-   - event.activity_group_name, event.date cannot be NULL.
-   - member.resident_id, member.activity_group_name cannot be NULL.
+-- resident.name, resident.email cannot be NULL
+-- review.resident_id, review.activity_group_name cannot be NULL
+-- event.activity_group_name, event.date cannot be NULL
+-- member.resident_id, member.activity_group_name cannot be NULL
 
-BOOLEAN FIELDS (Stored as INTEGER 0 or 1)
-   - is_active, is_verified, open_to_public, registration_required, is_waiver_allowed
+BOOLEAN FIELDS (stored as INTEGER 0 or 1)
+-- is_active, is_verified, open_to_public, registration_required, is_waiver_allowed
 
 DATE FORMAT (Handled in application logic)
    - All dates (e.g., date_of_birth, review_date, event.date, registration_deadline) should follow 'YYYY-MM-DD' format.
