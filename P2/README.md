@@ -11,41 +11,57 @@
 
 ### Decisions made when representing the activity_group entity
 
-Firstly, we debated whether the name of the activity group will suffice as the primary key. Although it is possible for distinct activity groups to have the same name, we could not find any examples of such cases after searching on the web for an hour. As such, we decided to set the name of the activity group as the primary key, and avoided the overhead of maintaining a separate id attribute.
+Firstly, we debated whether the name of the activity group would suffice as the primary key. Although it is possible for distinct activity groups to share the same name, we could not find any examples of such cases after searching the web for an hour. As such, we decided to use the name of the activity group as the primary key and avoided the overhead of maintaining a separate id attribute.
 
-Secondly, after interviewing our friends who have considered joining external activity groups, we found out that a huge concern for many is the frequency with which the activity group hosts events. Many of our interviewees do not want to join activity groups with extremely high frequency of meetups for fear of the commitment levels. Others did not want to pay the membership fee for activity groups which do not meet up frequently enough. From a user-experience standpoint, we believe that the best way to represent event_frequency is via an enum (weekly, fortnightly, monthly, quarterly), as splitting the dates too thinly via number of days makes it difficult for users to filter for their desired activity groups.
+Secondly, after interviewing friends who have considered joining external activity groups, we found that a major concern for many is the frequency with which the group hosts events. Some interviewees did not want to join activity groups with an overly high frequency of meetups due to the level of commitment required. Others were hesitant to pay membership fees for groups that meet too infrequently. From a user experience standpoint, we believe that the best way to represent event_frequency is via an enum (weekly, fortnightly, monthly, quarterly). Representing frequency in terms of exact days would make it harder for users to filter for suitable activity groups.
 
-Thirdly, we discussed what is the best way to represent the social_media_links
-information. Every activity group manages a different subset of social media accounts. For example, [Boston Young Professionals Association](https://bostonypa.com/) has a LinkedIn page because it is a professional community. On the other hand, more casual activity groups such as [Better Off Bowling](https://www.betteroffbowling.com/boston) will manage a more different subset of social media accounts such as X. As the type of activity groups we are looking at is extremely broad, we have good reason to believe that there might be a large proportion of social media sites which only a few activity groups have an account for. If we were to designate an attribute for every single one of these obscure social media sites (i.e. myspace_link, xiaohongshu_link, etc.), there will be many NULL values under these columns which is space-inefficient for the database. As such, we decided to represent the social_media_links attribute as a JSON object where the key is the name of the social media platform and the value is the corresponding link. If a particular activity group does not own a social media account for that platform, that key-value pair will not exist in the JSON object.
+Thirdly, we discussed the best way to represent the social_media_links attribute. Each activity group manages a different subset of social media accounts. For example, the Boston Young Professionals Association has a LinkedIn page due to its professional nature. In contrast, more casual groups such as Better Off Bowling tend to use platforms like X (formerly Twitter). Given the wide variety of group types we are considering, we believe there will be many social media platforms used by only a small number of groups. If we were to designate a separate attribute for each possible platform (e.g., myspace_link, xiaohongshu_link, etc.), the result would be numerous NULL values in the database, which is inefficient. Therefore, we decided to represent social_media_links as a JSON object where the key is the name of the platform and the value is the corresponding URL. If an activity group does not have an account on a specific platform, that key-value pair simply does not exist in the JSON.
 
 ### Decisions made when representing the resident entity
 
-We believe that the resident entity (resident of Boston) and activity_group entity have a many-to-many relationship. A resident can be a member of zero or more activity groups. An activity group can have zero or more members. It is also useful to track when the resident joined the activity group for membership fee collection purposes, as well as the role which the resident plays in the activity_group (e.g. member, exco, etc.)
+We believe that the resident (a resident of Boston) and activity_group entities have a many-to-many relationship. A resident can be a member of zero or more activity groups, and a group can have zero or more members. It is also useful to track when a resident joined a group—for purposes such as membership fee collection—as well as the role the resident holds in the group (e.g., member, executive committee member).
 
-A resident need not necessarily be a member of an activity group to participate in one of its events. Additionally, a resident may not necessarily be interested in all of the activity group’s events because of his unique interests. As such, we believe that a useful website will recommend to users possible events to attend or new activity groups to join semi-frequently. To do that, we need to know the user’s interests. As such, we included interests as a multivalued attribute which users can possibly select from a pool of enums when he first builds his profile on our website.
+A resident does not need to be a member of an activity group to participate in its events. Additionally, a resident may not be interested in all of a group's events due to their personal interests. Therefore, we believe a useful website should semi-regularly recommend events or new groups for users to explore. To enable this, we included interests as a multivalued attribute, which residents can select from a predefined set of enums when building their profile on the site.
 
-We also realised that it is redundant to include the attribute age in the resident entity, as we can easily derive it given the resident’s date of birth. Age is an important attribute to keep track of implicitly because certain events are only for mature audiences (e.g. sports bar gatherings)
+We also realized that including an explicit age attribute in the resident entity is redundant, as age can be derived from the resident’s date of birth. That said, age is an important implicit attribute, as certain events may be restricted to mature audiences (e.g., gatherings at sports bars).
 
 ### Decisions made when representing the event entity
 
-We notice that some events are pre-requisites of others. After speaking with one of our friends who is part of the [Charles River Wheelers](https://crw.org/) club, she mentioned that some of the more demanding cross-country events require participants to have successfully completed prior events before. We therefore modelled this recursive relationship in the ER diagram, keeping note of what the minimum performance must be for the prerequisite event, how long a prerequisite event completion remains valid, as well as whether a waiver can be considered for residents who can provide alternative credentials.
+We observed that some events are prerequisites for others. One of our friends, a member of the Charles River Wheelers, mentioned that certain demanding cross-country rides require participants to have completed previous rides. We therefore modeled this as a recursive relationship in the ER diagram. We also accounted for details such as the minimum performance required in the prerequisite event, how long that completion remains valid, and whether waivers can be granted for residents who can provide equivalent credentials.
 
 ### Decisions made when representing the session entity
 
-It felt reasonable to differentiate normal, routine sessions of activity groups from their highlight events. Members of the activity group might want to check the agenda of each session before deciding whether or not to participate in a particular session. We felt that the most intuitive way to represent the session is a weak entity, whose existence is dependent on activity_group as its identifying entity. With the session number serving as the discriminator, we can uniquely identify the session via the activity group’s name
+We felt it was useful to differentiate between regular, routine sessions and a group’s highlight events. Members may want to check the agenda of a session before deciding whether to participate. We concluded that the most intuitive way to represent a session is as a weak entity, dependent on the activity_group entity as its identifying owner. Using the session number as a discriminator, we can uniquely identify each session through the combination of the activity group’s name and the session number.
 
 
 ### Normalization & Functional Dependencies
 
-Throughout our modeling process, we ensured that all entity sets and relationship sets were normalized to at least Third Normal Form (3NF). For example, we excluded derived attributes like `age`, which can be computed from `date_of_birth`, and identified `interests` as a multivalued attribute that could be refactored into a separate table if implemented fully. 
+Throughout our modeling process, we ensured that all entity sets and relationship sets were normalized to at least Third Normal Form (3NF). This means that:
+- All non-key attributes are fully functionally dependent on the primary key (no partial dependencies),
+- There are no transitive dependencies between non-key attributes.
+
+For example, in the resident table, email and date_of_birth are only dependent on resident_id, and not on any other non-key attribute. Similarly, the event table avoids transitive dependencies by using a foreign key to the location table instead of repeating location details for each event.
+
+We also decomposed multivalued attributes like interests into a separate table structure (e.g., resident_interests(resident_id, interest)), allowing better scalability and query performance. This approach aligns with 3NF principles and ensures data integrity. For example, we excluded derived attributes like `age`, which can be computed from `date_of_birth`, and identified `interests` as a multivalued attribute that could be refactored into a separate table if implemented fully. 
 
 To reduce redundancy and improve query flexibility, we also extracted address details into a dedicated `location` entity, allowing multiple events to reuse the same location without duplication. 
+
+Normalization Process in Practice:
+
+First Normal Form (1NF) was ensured by removing repeating groups (e.g., representing multiple interests or roles through separate rows in bridge tables).
+Second Normal Form (2NF) was achieved by ensuring all non-key attributes are fully dependent on the entire primary key in composite-key scenarios (e.g., resident_id, activity_group_name → role).
+Third Normal Form (3NF) was achieved by removing transitive dependencies (e.g., storing location details in a location entity rather than duplicating them in event).
 
 Some of the key functional dependencies that guided our design include:
 - `resident_id → name, email, date_of_birth`
 - `activity_group.name → category, description, event_frequency`
 - `event_id → activity_group_name, date, location_id`
 - `(resident_id, activity_group_name) → join_date, role`
+
+Additional functional dependencies considered during modeling:
+- session_number, activity_group_name → session_date, session_agenda
+- event_id → prerequisite_event_id, waiver_option
+- location_id → street, city, state, zipcode
 
 These functional dependencies and normalization decisions informed both our E-R modeling and the final relational schema, helping us ensure data consistency, avoid redundancy, and maintain referential integrity across the database.
 
