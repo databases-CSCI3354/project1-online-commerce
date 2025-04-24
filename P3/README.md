@@ -9,7 +9,8 @@
 ### Create and activate Python virtual environment
 
 ```bash
-python -m venv .venv
+
+python3 -m venv .venv
 
 # on macOS/Linux
 source .venv/bin/activate

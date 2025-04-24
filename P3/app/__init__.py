@@ -4,7 +4,7 @@ import secrets
 from flask import Flask
 from flask_login import LoginManager
 
-from app.models.user import User  # You'll need to create this
+from app.models.user import User
 from app.routes import init_app
 from app.routes.auth import auth_bp
 from app.utils.database import close_db
