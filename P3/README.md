@@ -39,12 +39,7 @@ cp .env.example .env
 flask run
 
 # Run tests
-pytest
-
-# Run tests with coverage report
-pytest --cov=app
-
-# To verify that the app is running, go to the /status endpoint
+python -m pytest
 ```
 
 ## Development
