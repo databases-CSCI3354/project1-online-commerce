@@ -76,7 +76,7 @@ make lint # Run in the root of the directory
 │   ├── static/ # Static files like CSS
 │   ├── templates/ # Jinja templates
 │   ├── utils/ # Utility functions that are used across the entire application
-│   ├── northwind.db # Built database file
+│   ├── activity.db # Built database file
 │   └── run.py # Main executuable file
 └── tests/ # Tests for each file are labelled with the file name
     ├── routes/ # Tests for route handlers
