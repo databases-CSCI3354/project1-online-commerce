@@ -6,7 +6,7 @@ add-%:
 lint:
 	black .
 	isort .
-	autoflake --in-place --remove-all-unused-imports --recursive .
+	python -m autoflake --in-place --remove-all-unused-imports --recursive .
 	mypy . 
 	pylint **/*.py
 

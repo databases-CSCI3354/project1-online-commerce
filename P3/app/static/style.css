@@ -72,29 +72,6 @@ body {
     }
 }
 
-/* Cart badge */
-.cart-badge {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-}
-
-.cart-count {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    background-color: #ffc220;
-    color: #041e42;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.75rem;
-    font-weight: bold;
-}
-
 /* Auth pages */
 .auth-container {
     max-width: 400px;

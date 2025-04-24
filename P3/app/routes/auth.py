@@ -1,7 +1,6 @@
 import sqlite3
 
-from flask import (Blueprint, current_app, flash, g, redirect, render_template,
-                   request, url_for)
+from flask import Blueprint, current_app, flash, g, redirect, render_template, request, url_for
 from flask_bcrypt import Bcrypt
 from flask_login import current_user, login_required, login_user, logout_user
 
@@ -19,9 +18,7 @@ def connect_db():
 
 def get_db():
     if "db" not in g:
-        g.db = sqlite3.connect(
-            current_app.config["DATABASE"], detect_types=sqlite3.PARSE_DECLTYPES
-        )
+        g.db = sqlite3.connect(current_app.config["DATABASE"], detect_types=sqlite3.PARSE_DECLTYPES)
         g.db.row_factory = sqlite3.Row
 
     return g.db

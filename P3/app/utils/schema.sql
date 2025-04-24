@@ -1,4 +1,4 @@
-CREATE TABLE residents (
+CREATE TABLE IF NOT EXISTS residents (
     id INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
@@ -8,15 +8,15 @@ CREATE TABLE residents (
     profile_image TEXT
 );
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    resident_id TEXT NOT NULL,
+    resident_id INTEGER NOT NULL,
     username TEXT UNIQUE NOT NULL, 
     hashed_password TEXT NOT NULL,
     FOREIGN KEY (resident_id) REFERENCES residents(id)
 );
 
-CREATE TABLE activity_groups (
+CREATE TABLE IF NOT EXISTS activity_groups (
     name TEXT PRIMARY KEY,
     category TEXT,
     description TEXT,
@@ -33,7 +33,7 @@ CREATE TABLE activity_groups (
     min_age INTEGER
 );
 
-CREATE TABLE reviews (
+CREATE TABLE IF NOT EXISTS reviews (
     id INTEGER PRIMARY KEY,
     resident_id INTEGER NOT NULL,
     activity_group_name TEXT NOT NULL,
@@ -45,7 +45,7 @@ CREATE TABLE reviews (
     FOREIGN KEY (activity_group_name) REFERENCES activity_groups(name)
 );
 
-CREATE TABLE locations (
+CREATE TABLE IF NOT EXISTS locations (
     id INTEGER PRIMARY KEY,
     address TEXT,
     city TEXT,
@@ -53,7 +53,7 @@ CREATE TABLE locations (
     zip_code TEXT
 );
 
-CREATE TABLE events (
+CREATE TABLE IF NOT EXISTS events (
     id INTEGER PRIMARY KEY,
     activity_group_name TEXT NOT NULL,
     date TEXT NOT NULL,
@@ -66,19 +66,19 @@ CREATE TABLE events (
     FOREIGN KEY (location_id) REFERENCES locations(id)
 );
 
-CREATE TABLE sessions (
+CREATE TABLE IF NOT EXISTS sessions (
     id INTEGER PRIMARY KEY,
     activity_group_name TEXT NOT NULL,
     event_id INTEGER,
     date TEXT,
     attendance INTEGER,
     agenda TEXT,
-    FOREIGN KEY (activity_group_name) REFERENCES activity_group(name),
-    FOREIGN KEY (event_id) REFERENCES event(id)
+    FOREIGN KEY (activity_group_name) REFERENCES activity_groups(name),
+    FOREIGN KEY (event_id) REFERENCES events(id)
 );
 
 -- (associative)
-CREATE TABLE members (
+CREATE TABLE IF NOT EXISTS members (
     resident_id INTEGER,
     activity_group_name TEXT,
     join_date TEXT,
@@ -89,16 +89,16 @@ CREATE TABLE members (
 );
 
 -- (associative)
-CREATE TABLE hosts (
+CREATE TABLE IF NOT EXISTS hosts (
     activity_group_name TEXT,
     session_id INTEGER,
     PRIMARY KEY (activity_group_name, session_id),
     FOREIGN KEY (activity_group_name) REFERENCES activity_groups(name),
-    FOREIGN KEY (session_id) REFERENCES sessions(session_id)
+    FOREIGN KEY (session_id) REFERENCES sessions(id)
 );
 
 -- (associative, self-referencing)
-CREATE TABLE prerequisites (
+CREATE TABLE IF NOT EXISTS prerequisites (
     event_id INTEGER,
     prerequisite_event_id INTEGER,
     minimum_performance INTEGER,
