@@ -1,7 +1,6 @@
 from unittest.mock import MagicMock, patch
 
 
-
 def test_register_get(client):
     """Test register page loads correctly."""
     response = client.get("/register")
