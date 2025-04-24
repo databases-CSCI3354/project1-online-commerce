@@ -1,5 +1,8 @@
 .PHONY: lint
 
+add-%:
+	pip install $* && pip freeze > requirements.txt
+
 lint:
 	black .
 	isort .

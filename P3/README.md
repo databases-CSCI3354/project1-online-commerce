@@ -12,10 +12,10 @@
 python -m venv .venv
 
 # on macOS/Linux
-source .venv/bin/activate   
+source .venv/bin/activate
 
 # on Windows
-.venv\Scripts\activate         
+.venv\Scripts\activate
 ```
 
 ### Install dependencies
@@ -50,19 +50,15 @@ pytest --cov=app
 
 ### Add dependencies
 
-If you want to add a new dependency, please use `pip install` command.
+If you want to add a new dependency, please use `make add-<dependency>` command.
 
 For example, to add `python-dotenv` dependency, run:
 
 ```bash
-pip install python-dotenv
+make add-python-dotenv
 ```
 
-Before you merge your PR, make sure to freeze your current environment back into the `requirements.txt` file.
-
-```bash
-pip freeze > requirements.txt
-```
+The above command will add the dependency to the `requirements.txt` file and install it in your current environment. If not, you will need to manually freeze your environment at the end.
 
 ## Style Enforcement
 
