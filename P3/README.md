@@ -4,6 +4,8 @@
 
 ### Team Members and Roles
 
+- Jin Yang Chen: Development Engineer
+
 ## Quick Start
 
 ### Create and activate Python virtual environment
