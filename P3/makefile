@@ -1,4 +1,4 @@
-.PHONY: lint
+.PHONY: lint add-%
 
 add-%:
 	pip install $* && pip freeze > requirements.txt
