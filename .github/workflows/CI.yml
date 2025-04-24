@@ -38,28 +38,24 @@ jobs:
         with:
           python-version: '3.12.1'
 
-      - name: Install Poetry
-        run: |
-          curl -sSL https://install.python-poetry.org | python3 -
-
       - name: Install dependencies
-        working-directory: ./server
+        working-directory: ./P3
         run: |
-          poetry install --no-interaction --no-root
+          pip install -r requirements.txt
 
       - name: Run isort
-        working-directory: ./server
+        working-directory: ./P3
         run: |
-          poetry run isort --check-only --diff .
+          isort --check-only --diff .
 
       - name: Run autoflake
-        working-directory: ./server
+        working-directory: ./P3
         run: |
-          poetry run autoflake --remove-all-unused-imports --in-place --recursive --check --exclude=__init__.py --ignore-pass-after-docstring .
+          autoflake --remove-all-unused-imports --in-place --recursive --check --exclude=__init__.py --ignore-pass-after-docstring .
 
       - name: Run black
-        working-directory: ./server
+        working-directory: ./P3
         run: |
-          poetry run black --check --diff .
+          black --check --diff .
 
   
