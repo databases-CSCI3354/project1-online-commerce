@@ -1,0 +1,61 @@
+name: CI checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  pull-requests: read
+  contents: read
+
+jobs:
+  file-changes:
+    name: Check location of file changes
+    runs-on: ubuntu-latest
+    outputs:
+      p3: ${{ steps.filter.outputs.p3 }} 
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            p3:
+              - 'P3/**'
+
+  p3:
+    needs: file-changes
+    if: ${{ needs.file-changes.outputs.p3 == 'true' }}
+    name: p3-CI
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.12.1
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.1'
+
+      - name: Install dependencies
+        working-directory: ./P3
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run isort
+        working-directory: ./P3
+        run: |
+          isort --check-only --diff .
+
+      - name: Run autoflake
+        working-directory: ./P3
+        run: |
+          autoflake --remove-all-unused-imports --in-place --recursive --check --exclude=__init__.py --ignore-pass-after-docstring .
+
+      - name: Run black
+        working-directory: ./P3
+        run: |
+          black --check --diff .
+
+  
