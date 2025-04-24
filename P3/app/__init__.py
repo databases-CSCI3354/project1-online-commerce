@@ -22,9 +22,7 @@ def create_app():
     app.config["TESTING"] = True
 
     # Initialize database tables
-    web_employee_id = init_db(app)
-    app.config["WEB_EMPLOYEE_ID"] = web_employee_id
-
+    init_db(app)
     app.teardown_appcontext(close_db)
     init_app(app=app)
 
@@ -35,9 +33,8 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(user_id):
-        return User.get(user_id)  # Implement this method in your User model
+        return User.get(user_id)
 
-    # Register auth blueprint
     app.register_blueprint(auth_bp)
 
     return app
