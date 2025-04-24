@@ -7,7 +7,6 @@ import pytest
 from flask import g
 
 from app import create_app
-from app.models.activity_groups import ActivityGroup
 from app.services.activity_groups import ActivityGroupsService
 
 
@@ -68,27 +67,6 @@ def mock_activity_groups_service(mock_db):
     # Ensure the cursor is set after initialization
     service.cursor = mock_db
     return service
-
-
-# DO NOT CHANGE THIS FIXTURE AS ITS VALUE IS USED IN MANY TESTS
-@pytest.fixture
-def mock_activity_group():
-    return ActivityGroup(
-        name="Test Activity Group",
-        category="Test Category",
-        description="Test Description",
-        founding_date="2020-01-01",
-        website="https://example.com",
-        email="info@example.com",
-        phone_number="+1 (555) 555-5555",
-        social_media_links='{"facebook": "https://facebook.com", "instagram": "https://instagram.com"}',
-        is_active=True,
-        total_members=0,
-        event_frequency="weekly",
-        membership_fee=0,
-        open_to_public=True,
-        min_age=18,
-    )
 
 
 @pytest.fixture
