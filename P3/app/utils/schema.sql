@@ -119,9 +119,9 @@ VALUES
 
 INSERT OR IGNORE INTO activity_groups (name, category, description, founding_date, website, email, phone_number, social_media_links, is_active, total_members, event_frequency, membership_fee, open_to_public, min_age)
 VALUES
-    ('Arts and Crafts', 'Arts & Crafts', 'We offer classes, workshops, and events for all ages.', '2020-01-01', 'https://example.com/arts-and-crafts', 'info@arts-and-crafts.com', '+1 (555) 555-5555', '{"facebook": "https://facebook.com/arts-and-crafts", "instagram": "https://instagram.com/arts-and-crafts"}', 1, 0, 'weekly', 0, 1, 18),
-    ('Dance', 'Dance', 'We offer classes, workshops, and events for all ages.', '2020-01-01', 'https://example.com/dance', 'info@dance.com', '+1 (555) 555-5555', '{"facebook": "https://facebook.com/dance", "instagram": "https://instagram.com/dance"}', 1, 0, 'weekly', 0, 1, 18),
-    ('Music', 'Music', 'We offer classes, workshops, and events for all ages.', '2020-01-01', 'https://example.com/music', 'info@music.com', '+1 (555) 555-5555', '{"facebook": "https://facebook.com/music", "instagram": "https://instagram.com/music"}', 1, 0, 'weekly', 0, 1, 18);
+    ('Boston Draws', 'Arts & Crafts', 'Finding the next Picasso!', '2020-01-01', 'https://example.com/arts-and-crafts', 'info@arts-and-crafts.com', '+1 (555) 555-5555', '{"facebook": "https://facebook.com/arts-and-crafts", "instagram": "https://instagram.com/arts-and-crafts"}', 1, 0, 'weekly', 0, 1, 18),
+    ('Kpop Dance', 'Dance', 'All are welcome! Not just koreans', '2020-01-01', 'https://example.com/dance', 'info@dance.com', '+1 (555) 555-5555', '{"facebook": "https://facebook.com/dance", "instagram": "https://instagram.com/dance"}', 1, 0, 'weekly', 0, 1, 18),
+    ('Mus1c4lyf3', 'Music', 'We love cool music!', '2020-01-01', 'https://example.com/music', 'info@music.com', '+1 (555) 555-5555', '{"facebook": "https://facebook.com/music", "instagram": "https://instagram.com/music"}', 1, 0, 'weekly', 0, 1, 18);
 
 
 INSERT OR IGNORE INTO users (id, username, hashed_password)
