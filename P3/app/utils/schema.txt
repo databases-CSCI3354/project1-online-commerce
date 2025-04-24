@@ -13,11 +13,11 @@ Entity: resident
 
 Entity: activity_group
 - name TEXT PRIMARY KEY
-- category TEXT
-- description TEXT
+- category TEXT NOT NULL
+- description TEXT NOT NULL
 - founding_date TEXT
 - website TEXT
-- email TEXT
+- email TEXT NOT NULL
 - phone_number TEXT
 - social_media_links TEXT -- stored as a JSON string
 - is_active BOOLEAN DEFAULT 1

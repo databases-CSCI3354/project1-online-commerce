@@ -25,11 +25,12 @@ CREATE TABLE IF NOT EXISTS activity_groups (
     email TEXT,
     phone_number TEXT,
     social_media_links TEXT, -- stored as JSON string
-    is_active INTEGER DEFAULT 1,
+    is_active BOOLEAN DEFAULT 1,
     total_members INTEGER DEFAULT 0,
-    event_frequency TEXT,
+    event_frequency TEXT NOT NULL
+        CHECK (event_frequency IN ('weekly','biweekly','monthly')),
     membership_fee INTEGER,
-    open_to_public INTEGER,
+    open_to_public BOOLEAN,
     min_age INTEGER
 );
 
@@ -115,6 +116,12 @@ CREATE TABLE IF NOT EXISTS prerequisites (
 INSERT OR IGNORE INTO residents (id, name, email, phone_number, interests, date_of_birth, profile_image)
 VALUES
     (1, 'John Doe', 'john.doe@example.com', '+1 (555) 555-5555', 'Music, Art, Cooking', '1990-01-01', 'https://example.com/johndoe.jpg');
+
+INSERT OR IGNORE INTO activity_groups (name, category, description, founding_date, website, email, phone_number, social_media_links, is_active, total_members, event_frequency, membership_fee, open_to_public, min_age)
+VALUES
+    ('Arts and Crafts', 'Arts & Crafts', 'We offer classes, workshops, and events for all ages.', '2020-01-01', 'https://example.com/arts-and-crafts', 'info@arts-and-crafts.com', '+1 (555) 555-5555', '{"facebook": "https://facebook.com/arts-and-crafts", "instagram": "https://instagram.com/arts-and-crafts"}', 1, 0, 'weekly', 0, 1, 18),
+    ('Dance', 'Dance', 'We offer classes, workshops, and events for all ages.', '2020-01-01', 'https://example.com/dance', 'info@dance.com', '+1 (555) 555-5555', '{"facebook": "https://facebook.com/dance", "instagram": "https://instagram.com/dance"}', 1, 0, 'weekly', 0, 1, 18),
+    ('Music', 'Music', 'We offer classes, workshops, and events for all ages.', '2020-01-01', 'https://example.com/music', 'info@music.com', '+1 (555) 555-5555', '{"facebook": "https://facebook.com/music", "instagram": "https://instagram.com/music"}', 1, 0, 'weekly', 0, 1, 18);
 
 
 INSERT OR IGNORE INTO users (id, username, hashed_password)

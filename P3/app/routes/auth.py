@@ -4,7 +4,7 @@ from flask import Blueprint, current_app, flash, g, redirect, render_template, r
 from flask_bcrypt import Bcrypt
 from flask_login import current_user, login_required, login_user, logout_user
 
-from app.models.user import User
+from app.models.users import User
 
 auth_bp = Blueprint("auth", __name__)
 bcrypt = Bcrypt()
