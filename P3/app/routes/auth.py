@@ -55,9 +55,7 @@ def register():
         db = get_db()
         try:
             # Check if customer exists
-            resident = db.execute(
-                "SELECT id FROM residents WHERE id = ?", [resident_id]
-            ).fetchone()
+            resident = db.execute("SELECT id FROM residents WHERE id = ?", [resident_id]).fetchone()
 
             if not resident:
                 flash("Invalid Resident ID", "error")
