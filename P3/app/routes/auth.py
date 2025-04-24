@@ -46,28 +46,28 @@ def register():
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
-        customer_id = request.form.get("customer_id")
+        resident_id = request.form.get("resident_id")
 
-        if not username or not password or not customer_id:
+        if not username or not password or not resident_id:
             flash("All fields are required", "error")
             return render_template("auth/register.html")
 
         db = get_db()
         try:
             # Check if customer exists
-            customer = db.execute(
-                "SELECT CustomerID FROM Customers WHERE CustomerID = ?", [customer_id]
+            resident = db.execute(
+                "SELECT id FROM residents WHERE id = ?", [resident_id]
             ).fetchone()
 
-            if not customer:
-                flash("Invalid Customer ID", "error")
+            if not resident:
+                flash("Invalid Resident ID", "error")
                 return render_template("auth/register.html")
 
             # Create new user
             hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
             db.execute(
-                "INSERT INTO Users (customer_id, username, hashed_password) VALUES (?, ?, ?)",
-                (customer_id, username.lower(), hashed_password),
+                "INSERT INTO users (resident_id, username, hashed_password) VALUES (?, ?, ?)",
+                (resident_id, username.lower(), hashed_password),
             )
             db.commit()
 
@@ -75,7 +75,7 @@ def register():
             return redirect(url_for("auth.login"))
 
         except sqlite3.IntegrityError:
-            flash("Username already exists or Customer ID already registered", "error")
+            flash("Username already exists or Resident ID already registered", "error")
             return render_template("auth/register.html")
 
     return render_template("auth/register.html")
@@ -86,7 +86,7 @@ def register():
 def profile():
     db = get_db()
     customer = db.execute(
-        "SELECT * FROM Customers WHERE CustomerID = ?", [current_user.customer_id]
+        "SELECT * FROM residents WHERE id = ?", [current_user.resident_id]
     ).fetchone()
 
     return render_template("auth/profile.html", customer=customer)

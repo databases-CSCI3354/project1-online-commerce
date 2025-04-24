@@ -27,7 +27,7 @@ class User(UserMixin):
     def validate(username, password):
         db = User.get_db()
         user = db.execute(
-            "SELECT id, username, customer_id, hashed_password FROM Users WHERE username = ?",
+            "SELECT id, username, resident_id, hashed_password FROM users WHERE username = ?",
             [username.lower()],
         ).fetchone()
 
@@ -38,7 +38,7 @@ class User(UserMixin):
             return User(
                 user["id"],
                 user["username"],
-                user["customer_id"],
+                user["resident_id"],
                 user["hashed_password"],
             )
 

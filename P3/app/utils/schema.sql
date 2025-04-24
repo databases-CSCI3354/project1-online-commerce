@@ -111,6 +111,12 @@ CREATE TABLE IF NOT EXISTS prerequisites (
 );
 
 
+-- dummy data insertions
+INSERT OR IGNORE INTO residents (id, name, email, phone_number, interests, date_of_birth, profile_image)
+VALUES
+    (1, 'John Doe', 'john.doe@example.com', '+1 (555) 555-5555', 'Music, Art, Cooking', '1990-01-01', 'https://example.com/johndoe.jpg');
+
+
 INSERT OR IGNORE INTO users (id, username, hashed_password)
 SELECT 
     id,
