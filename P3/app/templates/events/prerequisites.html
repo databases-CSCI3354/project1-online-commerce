@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold">Manage Prerequisites</h1>
+            <p class="text-gray-600 mt-2">
+                For event: {{ event.activity_group_name }} ({{ event.date }})
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+                <h2 class="text-xl font-semibold mb-4">Add Prerequisite</h2>
+                <form method="POST" class="bg-white shadow-md rounded px-6 pt-6 pb-8 mb-4">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="prerequisite_event_id">
+                            Prerequisite Event
+                        </label>
+                        <select name="prerequisite_event_id" id="prerequisite_event_id" required
+                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            <option value="">Select an event</option>
+                            {% for other_event in other_events %}
+                            {% if other_event.id != event.id %}
+                            <option value="{{ other_event.id }}">
+                                {{ other_event.date }} - {{ other_event.activity_group_name }}
+                            </option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="minimum_performance">
+                            Minimum Performance Score
+                        </label>
+                        <input type="number" name="minimum_performance" id="minimum_performance" required min="0"
+                               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="qualification_period">
+                            Qualification Period (days)
+                        </label>
+                        <input type="number" name="qualification_period" id="qualification_period" required min="1"
+                               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="flex items-center">
+                            <input type="checkbox" name="is_waiver_allowed" id="is_waiver_allowed"
+                                   class="mr-2">
+                            <span class="text-gray-700 text-sm font-bold">Allow Waiver</span>
+                        </label>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <button type="submit"
+                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                            Add Prerequisite
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div>
+                <h2 class="text-xl font-semibold mb-4">Current Prerequisites</h2>
+                {% if prerequisites %}
+                <div class="space-y-4">
+                    {% for prereq in prerequisites %}
+                    <div class="bg-white shadow-md rounded p-4">
+                        <h3 class="font-medium">{{ prereq.activity_group_name }}</h3>
+                        <p class="text-gray-600">Date: {{ prereq.date }}</p>
+                        <p class="text-gray-600">Minimum Performance: {{ prereq.minimum_performance }}</p>
+                        <p class="text-gray-600">Qualification Period: {{ prereq.qualification_period }} days</p>
+                        {% if prereq.is_waiver_allowed %}
+                        <p class="text-green-600">Waiver may be allowed</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-gray-500">No prerequisites set for this event.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="mt-8">
+            <a href="{{ url_for('events.view_event', event_id=event.id) }}"
+               class="text-blue-500 hover:text-blue-800">
+                ← Back to Event
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %} 

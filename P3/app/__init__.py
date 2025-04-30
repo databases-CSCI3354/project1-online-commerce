@@ -7,6 +7,7 @@ from flask_login import LoginManager
 from app.models.users import User
 from app.routes import init_app
 from app.routes.auth import auth_bp
+from app.routes.events import events_bp
 from app.utils.database import close_db
 from app.utils.init_db import init_db
 
@@ -36,5 +37,6 @@ def create_app():
         return User.get(user_id)
 
     app.register_blueprint(auth_bp)
+    app.register_blueprint(events_bp)
 
     return app
