@@ -1,50 +1,51 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from flask_login import login_required, current_user
-from datetime import datetime
+from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask_login import login_required
 
+from app.models.activity_groups import ActivityGroup
 from app.models.events import Event
 from app.models.locations import Location
-from app.models.activity_groups import ActivityGroup
 from app.utils.database import get_db
 
-events_bp = Blueprint('events', __name__)
+events_bp = Blueprint("events", __name__)
 
-@events_bp.route('/events')
+
+@events_bp.route("/events")
 def list_events():
     events = Event.get_all()
-    return render_template('events/list.html', events=events)
+    return render_template("events/list.html", events=events)
 
-@events_bp.route('/events/<int:event_id>')
+
+@events_bp.route("/events/<int:event_id>")
 def view_event(event_id):
     event = Event.get(event_id)
     if event is None:
-        flash('Event not found', 'error')
-        return redirect(url_for('events.list_events'))
-    
+        flash("Event not found", "error")
+        return redirect(url_for("events.list_events"))
+
     location = Location.get(event.location_id) if event.location_id else None
     prerequisites = Event.get_prerequisites(event_id)
-    
-    return render_template('events/view.html', 
-                         event=event, 
-                         location=location,
-                         prerequisites=prerequisites)
 
-@events_bp.route('/events/create', methods=['GET', 'POST'])
+    return render_template(
+        "events/view.html", event=event, location=location, prerequisites=prerequisites
+    )
+
+
+@events_bp.route("/events/create", methods=["GET", "POST"])
 @login_required
 def create_event():
-    if request.method == 'POST':
-        activity_group_name = request.form['activity_group_name']
-        date = request.form['date']
-        location_id = request.form.get('location_id')
-        max_participants = request.form.get('max_participants', type=int)
-        cost = request.form.get('cost', type=int)
-        registration_required = bool(request.form.get('registration_required'))
-        registration_deadline = request.form.get('registration_deadline')
+    if request.method == "POST":
+        activity_group_name = request.form["activity_group_name"]
+        date = request.form["date"]
+        location_id = request.form.get("location_id")
+        max_participants = request.form.get("max_participants", type=int)
+        cost = request.form.get("cost", type=int)
+        registration_required = bool(request.form.get("registration_required"))
+        registration_deadline = request.form.get("registration_deadline")
 
         # Validate the data
         if not activity_group_name or not date:
-            flash('Activity group name and date are required', 'error')
-            return redirect(url_for('events.create_event'))
+            flash("Activity group name and date are required", "error")
+            return redirect(url_for("events.create_event"))
 
         try:
             event_id = Event.create(
@@ -54,100 +55,109 @@ def create_event():
                 max_participants=max_participants,
                 cost=cost,
                 registration_required=registration_required,
-                registration_deadline=registration_deadline
+                registration_deadline=registration_deadline,
             )
-            flash('Event created successfully', 'success')
-            return redirect(url_for('events.view_event', event_id=event_id))
+            flash("Event created successfully", "success")
+            return redirect(url_for("events.view_event", event_id=event_id))
         except Exception as e:
-            flash(f'Error creating event: {str(e)}', 'error')
-            return redirect(url_for('events.create_event'))
+            flash(f"Error creating event: {str(e)}", "error")
+            return redirect(url_for("events.create_event"))
 
     # GET request - show the create form
     locations = Location.get_all()
     activity_groups = ActivityGroup.get_all()
-    return render_template('events/create.html', 
-                         locations=locations,
-                         activity_groups=activity_groups)
+    return render_template(
+        "events/create.html", locations=locations, activity_groups=activity_groups
+    )
 
-@events_bp.route('/events/<int:event_id>/edit', methods=['GET', 'POST'])
+
+@events_bp.route("/events/<int:event_id>/edit", methods=["GET", "POST"])
 @login_required
 def edit_event(event_id):
     event = Event.get(event_id)
     if event is None:
-        flash('Event not found', 'error')
-        return redirect(url_for('events.list_events'))
+        flash("Event not found", "error")
+        return redirect(url_for("events.list_events"))
 
-    if request.method == 'POST':
-        event.activity_group_name = request.form['activity_group_name']
-        event.date = request.form['date']
-        event.location_id = request.form.get('location_id')
-        event.max_participants = request.form.get('max_participants', type=int)
-        event.cost = request.form.get('cost', type=int)
-        event.registration_required = bool(request.form.get('registration_required'))
-        event.registration_deadline = request.form.get('registration_deadline')
+    if request.method == "POST":
+        event.activity_group_name = request.form["activity_group_name"]
+        event.date = request.form["date"]
+        event.location_id = request.form.get("location_id")
+        event.max_participants = request.form.get("max_participants", type=int)
+        event.cost = request.form.get("cost", type=int)
+        event.registration_required = bool(request.form.get("registration_required"))
+        event.registration_deadline = request.form.get("registration_deadline")
 
         try:
             event.update()
-            flash('Event updated successfully', 'success')
-            return redirect(url_for('events.view_event', event_id=event_id))
+            flash("Event updated successfully", "success")
+            return redirect(url_for("events.view_event", event_id=event_id))
         except Exception as e:
-            flash(f'Error updating event: {str(e)}', 'error')
+            flash(f"Error updating event: {str(e)}", "error")
 
     locations = Location.get_all()
     activity_groups = ActivityGroup.get_all()
-    return render_template('events/edit.html', 
-                         event=event,
-                         locations=locations,
-                         activity_groups=activity_groups)
+    return render_template(
+        "events/edit.html", event=event, locations=locations, activity_groups=activity_groups
+    )
 
-@events_bp.route('/events/<int:event_id>/delete', methods=['POST'])
+
+@events_bp.route("/events/<int:event_id>/delete", methods=["POST"])
 @login_required
 def delete_event(event_id):
     event = Event.get(event_id)
     if event is None:
-        flash('Event not found', 'error')
+        flash("Event not found", "error")
     else:
         try:
             event.delete()
-            flash('Event deleted successfully', 'success')
+            flash("Event deleted successfully", "success")
         except Exception as e:
-            flash(f'Error deleting event: {str(e)}', 'error')
-    
-    return redirect(url_for('events.list_events'))
+            flash(f"Error deleting event: {str(e)}", "error")
 
-@events_bp.route('/events/<int:event_id>/prerequisites', methods=['GET', 'POST'])
+    return redirect(url_for("events.list_events"))
+
+
+@events_bp.route("/events/<int:event_id>/prerequisites", methods=["GET", "POST"])
 @login_required
 def manage_prerequisites(event_id):
     event = Event.get(event_id)
     if event is None:
-        flash('Event not found', 'error')
-        return redirect(url_for('events.list_events'))
+        flash("Event not found", "error")
+        return redirect(url_for("events.list_events"))
 
-    if request.method == 'POST':
-        prerequisite_event_id = request.form.get('prerequisite_event_id', type=int)
-        minimum_performance = request.form.get('minimum_performance', type=int)
-        qualification_period = request.form.get('qualification_period', type=int)
-        is_waiver_allowed = bool(request.form.get('is_waiver_allowed'))
+    if request.method == "POST":
+        prerequisite_event_id = request.form.get("prerequisite_event_id", type=int)
+        minimum_performance = request.form.get("minimum_performance", type=int)
+        qualification_period = request.form.get("qualification_period", type=int)
+        is_waiver_allowed = bool(request.form.get("is_waiver_allowed"))
 
         db = get_db()
         try:
             db.execute(
-                '''INSERT INTO prerequisite 
+                """INSERT INTO prerequisite 
                    (event_id, prerequisite_event_id, minimum_performance,
                     qualification_period, is_waiver_allowed)
-                   VALUES (?, ?, ?, ?, ?)''',
-                (event_id, prerequisite_event_id, minimum_performance,
-                 qualification_period, is_waiver_allowed)
+                   VALUES (?, ?, ?, ?, ?)""",
+                (
+                    event_id,
+                    prerequisite_event_id,
+                    minimum_performance,
+                    qualification_period,
+                    is_waiver_allowed,
+                ),
             )
             db.commit()
-            flash('Prerequisite added successfully', 'success')
+            flash("Prerequisite added successfully", "success")
         except Exception as e:
-            flash(f'Error adding prerequisite: {str(e)}', 'error')
+            flash(f"Error adding prerequisite: {str(e)}", "error")
 
     prerequisites = Event.get_prerequisites(event_id)
     other_events = Event.get_by_activity_group(event.activity_group_name)
-    
-    return render_template('events/prerequisites.html',
-                         event=event,
-                         prerequisites=prerequisites,
-                         other_events=other_events) 
+
+    return render_template(
+        "events/prerequisites.html",
+        event=event,
+        prerequisites=prerequisites,
+        other_events=other_events,
+    )
