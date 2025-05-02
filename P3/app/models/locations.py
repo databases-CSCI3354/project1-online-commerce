@@ -1,5 +1,6 @@
 from app.utils.database import get_db
 
+
 class Location:
     def __init__(self, id, address, city, state, zip_code):
         self.id = id
@@ -13,9 +14,9 @@ class Location:
         db = get_db()
         cursor = db.cursor()
         cursor.execute(
-            '''INSERT INTO locations (address, city, state, zip_code)
-               VALUES (?, ?, ?, ?)''',
-            (address, city, state, zip_code)
+            """INSERT INTO locations (address, city, state, zip_code)
+               VALUES (?, ?, ?, ?)""",
+            (address, city, state, zip_code),
         )
         db.commit()
         return cursor.lastrowid
@@ -23,46 +24,41 @@ class Location:
     @staticmethod
     def get(location_id):
         db = get_db()
-        location = db.execute(
-            '''SELECT * FROM locations WHERE id = ?''',
-            (location_id,)
-        ).fetchone()
-        
+        location = db.execute("""SELECT * FROM locations WHERE id = ?""", (location_id,)).fetchone()
+
         if location is None:
             return None
-            
+
         return Location(
-            id=location['id'],
-            address=location['address'],
-            city=location['city'],
-            state=location['state'],
-            zip_code=location['zip_code']
+            id=location["id"],
+            address=location["address"],
+            city=location["city"],
+            state=location["state"],
+            zip_code=location["zip_code"],
         )
 
     @staticmethod
     def get_all():
         db = get_db()
-        locations = db.execute(
-            '''SELECT * FROM locations ORDER BY city, state'''
-        ).fetchall()
+        locations = db.execute("""SELECT * FROM locations ORDER BY city, state""").fetchall()
         return locations
 
     def update(self):
         db = get_db()
         db.execute(
-            '''UPDATE locations
+            """UPDATE locations
                SET address = ?,
                    city = ?,
                    state = ?,
                    zip_code = ?
-               WHERE id = ?''',
-            (self.address, self.city, self.state, self.zip_code, self.id)
+               WHERE id = ?""",
+            (self.address, self.city, self.state, self.zip_code, self.id),
         )
         db.commit()
 
     def delete(self):
         db = get_db()
-        db.execute('DELETE FROM locations WHERE id = ?', (self.id,))
+        db.execute("DELETE FROM locations WHERE id = ?", (self.id,))
         db.commit()
 
     @staticmethod
@@ -70,11 +66,11 @@ class Location:
         db = get_db()
         search_term = f"%{query}%"
         locations = db.execute(
-            '''SELECT * FROM locations 
+            """SELECT * FROM locations 
                WHERE address LIKE ? 
                OR city LIKE ? 
                OR state LIKE ?
-               OR zip_code LIKE ?''',
-            (search_term, search_term, search_term, search_term)
+               OR zip_code LIKE ?""",
+            (search_term, search_term, search_term, search_term),
         ).fetchall()
-        return locations 
+        return locations
