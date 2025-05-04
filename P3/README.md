@@ -1,6 +1,7 @@
 # Databases Project 3 - Professor Aviram
 
 ## Overview of Project
+This web application allows users to interact with a sample e-commerce database, enabling them to query product data, update orders, and explore analytics through a clean interface. It is intended for students, instructors, and developers evaluating online retail data interactions through a Flask-based interface.
 
 ### Team Members and Roles
 
@@ -34,6 +35,11 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
+## Run the application
+```bash
+flask run
+```
+
 ## Commands
 
 ```bash
@@ -41,7 +47,7 @@ cp .env.example .env
 flask run
 
 # Run tests
-python -m pytest
+python -m pytest tests/
 ```
 
 ## Development
@@ -81,4 +87,14 @@ make lint # Run in the root of the directory
     ├── services/ # Tests for service layer
     ├── integration_test.py # End-to-end tests
     └── conftest.py # Test fixtures and configuration
+```
+
+## Notable Features
+
+```bash
+- Modular architecture using Flask Blueprints
+- Full separation of concerns: routes, services, and models
+- SQLite database integration with prebuilt schema
+- End-to-end testing and unit tests for all key components
+- Environment variable management with `.env.example` support
 ```
