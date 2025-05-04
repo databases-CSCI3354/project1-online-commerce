@@ -8,8 +8,6 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.12"
 
-[tool.poetry]
-package-mode = false
 
 [tool.pylint.messages_control]
 disable = [
