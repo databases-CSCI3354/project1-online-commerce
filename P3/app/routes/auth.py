@@ -55,7 +55,7 @@ def register():
         db = get_db()
         try:
             # Check if customer exists
-            resident = db.execute("SELECT id FROM residents WHERE id = ?", [resident_id]).fetchone()
+            resident = db.execute("SELECT resident_id FROM resident WHERE resident_id = ?", [resident_id]).fetchone()
 
             if not resident:
                 flash("Invalid Resident ID", "error")
@@ -64,8 +64,8 @@ def register():
             # Create new user
             hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
             db.execute(
-                "INSERT INTO users (resident_id, username, hashed_password) VALUES (?, ?, ?)",
-                (resident_id, username.lower(), hashed_password),
+                "INSERT INTO resident (resident_id, username, hashed_password) VALUES (?, ?, ?)",
+                [resident_id, username, hashed_password],
             )
             db.commit()
 
@@ -84,7 +84,7 @@ def register():
 def profile():
     db = get_db()
     customer = db.execute(
-        "SELECT * FROM residents WHERE id = ?", [current_user.resident_id]
+        "SELECT * FROM resident WHERE resident_id = ?", [current_user.resident_id]
     ).fetchone()
 
     return render_template("auth/profile.html", customer=customer)

@@ -16,7 +16,9 @@ CREATE TABLE resident (
     phone_number TEXT UNIQUE,
     interests TEXT,
     date_of_birth TEXT,
-    profile_image TEXT
+    profile_image TEXT,
+    username TEXT UNIQUE,
+    hashed_password TEXT
 );
 
 -- Table: activity_group

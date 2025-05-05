@@ -27,8 +27,8 @@ class User(UserMixin):
     def validate(username, password):
         db = User.get_db()
         user = db.execute(
-            "SELECT id, username, resident_id, hashed_password FROM users WHERE username = ?",
-            [username.lower()],
+            "SELECT resident_id, username, hashed_password FROM resident WHERE username = ?",
+            (username,),
         ).fetchone()
 
         if user is None:
@@ -36,7 +36,7 @@ class User(UserMixin):
 
         if bcrypt.check_password_hash(user["hashed_password"], password):
             return User(
-                user["id"],
+                user["resident_id"],
                 user["username"],
                 user["resident_id"],
                 user["hashed_password"],
@@ -48,13 +48,13 @@ class User(UserMixin):
     def get(user_id):
         db = User.get_db()
         user = db.execute(
-            "SELECT id, username, resident_id, hashed_password FROM Users WHERE id = ?",
-            [user_id],
+            "SELECT resident_id, username, hashed_password FROM resident WHERE resident_id = ?",
+            (user_id,),
         ).fetchone()
 
         if user:
             return User(
-                user["id"],
+                user["resident_id"],
                 user["username"],
                 user["resident_id"],
                 user["hashed_password"],
