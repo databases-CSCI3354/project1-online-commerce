@@ -52,11 +52,12 @@
             <a href="{{ group.website }}" target="_blank" class="text-blue-600 hover:underline">Website</a>
             <a href="mailto:{{ group.email }}" class="text-green-600 hover:underline">Email</a>
             <a href="tel:{{ group.phone_number }}" class="text-gray-600 hover:underline">Call</a>
+            <a href="{{ url_for('reviews.list_reviews', name=group.name) }}" class="text-purple-600 hover:underline">Reviews</a>
           </div>
         </div>
       {% endfor %}
     </div>
   {% else %}
-    <p class="text-center text-gray-600">No activities found for “<strong>{{ search_variable }}</strong>”.</p>
+    <p class="text-center text-gray-600">No activities found for "<strong>{{ search_variable }}</strong>".</p>
   {% endif %}
 {% endblock %}

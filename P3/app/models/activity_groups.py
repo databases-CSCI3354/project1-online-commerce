@@ -31,13 +31,13 @@ class ActivityGroup(BaseModel):
     @staticmethod
     def get_all():
         db = get_db()
-        groups = db.execute("""SELECT * FROM activity_groups ORDER BY name""").fetchall()
+        groups = db.execute("""SELECT * FROM activity_group ORDER BY name""").fetchall()
         return groups
 
     @staticmethod
     def get(name):
         db = get_db()
-        group = db.execute("""SELECT * FROM activity_groups WHERE name = ?""", (name,)).fetchone()
+        group = db.execute("""SELECT * FROM activity_group WHERE name = ?""", (name,)).fetchone()
 
         if group is None:
             return None

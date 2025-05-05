@@ -8,6 +8,7 @@ from app.models.users import User
 from app.routes import init_app
 from app.routes.auth import auth_bp
 from app.routes.events import events_bp
+from app.routes.reviews import reviews_bp
 from app.utils.database import close_db
 from app.utils.init_db import init_db
 
@@ -38,5 +39,6 @@ def create_app():
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(events_bp)
+    app.register_blueprint(reviews_bp)
 
     return app

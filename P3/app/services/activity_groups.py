@@ -10,7 +10,7 @@ class ActivityGroupsService:
         self.columns = list(ActivityGroup.model_fields.keys())
 
     def get_all_activity_groups(self) -> list[ActivityGroup]:
-        self.cursor.execute("SELECT * FROM activity_groups")
+        self.cursor.execute("SELECT * FROM activity_group")
         rows = self.cursor.fetchall()
         activity_groups: list[ActivityGroup] = [
             ActivityGroup.model_validate(dict(zip(self.columns, row))) for row in rows
@@ -22,7 +22,7 @@ class ActivityGroupsService:
         Return all ActivityGroup whose name or category matches
         the given regex pattern (case-insensitive).
         """
-        self.cursor.execute("SELECT * FROM activity_groups")
+        self.cursor.execute("SELECT * FROM activity_group")
         rows = self.cursor.fetchall()
 
         prog = re.compile(pattern, re.IGNORECASE)

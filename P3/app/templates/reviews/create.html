@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Write a Review for {{ activity_group_name }}</h1>
+
+    <form method="POST" class="mt-4">
+        <div class="mb-3">
+            <label for="star_rating" class="form-label">Rating</label>
+            <div class="rating-input">
+                {% for i in range(5) %}
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="star_rating" 
+                           id="star{{ i+1 }}" value="{{ i+1 }}" required>
+                    <label class="form-check-label" for="star{{ i+1 }}">
+                        {{ i+1 }} Star{% if i != 0 %}s{% endif %}
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="content" class="form-label">Your Review</label>
+            <textarea class="form-control" id="content" name="content" rows="5" 
+                      required placeholder="Share your experience with this activity group..."></textarea>
+        </div>
+
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Submit Review</button>
+            <a href="{{ url_for('reviews.list_reviews', name=activity_group_name) }}" 
+               class="btn btn-outline-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %} 
