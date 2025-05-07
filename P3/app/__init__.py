@@ -32,8 +32,7 @@ def create_app():
     # Initialize Flask-Login
     login_manager = LoginManager()
     login_manager.init_app(app)
-    login_manager.login_view = None  # Initialize as None first
-    login_manager.login_view = "auth.login"  # Then set the string value
+    login_manager.login_view = "auth.login"  # Set the login view for @login_required
 
     @login_manager.user_loader
     def load_user(user_id):
