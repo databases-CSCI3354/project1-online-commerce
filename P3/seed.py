@@ -8,8 +8,8 @@ c = conn.cursor()
 
 # Insert a test resident (user)
 c.execute("""
-INSERT OR IGNORE INTO resident (resident_id, name, email, phone_number, interests, date_of_birth, profile_image)
-VALUES (1, 'Test User', 'test@example.com', '555-1234', 'music,sports', '2000-01-01', NULL)
+INSERT OR IGNORE INTO resident (resident_id, name, email, phone_number, interests, date_of_birth, profile_image, username, hashed_password)
+VALUES (1, 'Test User', 'test@example.com', '555-1234', 'music,sports', '2000-01-01', NULL, 'testuser', '$2b$12$C6UzMDM.H6dfI/f/IKcEeOEvQ6h1uZ5l5Q5e5e5e5e5e5e5e5e5e')
 """)
 
 # Insert a test activity group
