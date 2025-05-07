@@ -119,3 +119,24 @@ CREATE TABLE prerequisite (
     FOREIGN KEY (prerequisite_event_id) REFERENCES event(event_id),
     CHECK (event_id != prerequisite_event_id)
 );
+
+-- Table: registrations
+CREATE TABLE registrations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    event_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (event_id) REFERENCES event(event_id),
+    FOREIGN KEY (user_id) REFERENCES resident(resident_id)
+);
+
+-- Table: waitlist
+CREATE TABLE waitlist (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    event_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    status TEXT DEFAULT 'waiting', -- 'waiting', 'notified', 'confirmed'
+    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (event_id) REFERENCES event(event_id),
+    FOREIGN KEY (user_id) REFERENCES resident(resident_id)
+);
