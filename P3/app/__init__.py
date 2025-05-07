@@ -9,9 +9,11 @@ from app.routes import init_app
 from app.routes.auth import auth_bp
 from app.routes.events import events_bp
 from app.routes.reviews import reviews_bp
-from app.utils.database import close_db
+from app.utils.database import close_db, check_db_health
 from app.utils.init_db import init_db
+from app.utils.logger import setup_logger
 
+log = setup_logger(__name__)
 
 def create_app():
     # create and configure the app
@@ -19,13 +21,21 @@ def create_app():
     secret_key = secrets.token_hex(32)
     app.secret_key = secret_key
     app.config["DATABASE"] = os.path.abspath(os.path.join(os.path.dirname(__file__), "activity.db"))
-    print(f"[DEBUG] Flask app using database at: {app.config['DATABASE']}")
+    log.info(f"Using database at: {app.config['DATABASE']}")
 
     # Disable template caching during testing
     app.config["TESTING"] = True
 
     # Initialize database tables
-    init_db(app)
+    with app.app_context():
+        init_db(app)
+        if not check_db_health():
+            log.warning("Database health check failed - reinitializing database")
+            init_db(app)
+            if not check_db_health():
+                log.error("Database health check failed after reinitialization")
+                raise RuntimeError("Failed to initialize database properly")
+        
     app.teardown_appcontext(close_db)
     init_app(app=app)
 
