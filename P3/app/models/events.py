@@ -35,7 +35,7 @@ class Event:
         db = get_db()
         cursor = db.cursor()
         cursor.execute(
-            """INSERT INTO events (activity_group_name, date, location_id, 
+            """INSERT INTO event (activity_group_name, date, location_id, 
                                 max_participants, cost, registration_required, 
                                 registration_deadline)
                VALUES (?, ?, ?, ?, ?, ?, ?)""",
@@ -55,7 +55,7 @@ class Event:
     @staticmethod
     def get(event_id):
         db = get_db()
-        event = db.execute("""SELECT * FROM events WHERE id = ?""", (event_id,)).fetchone()
+        event = db.execute("""SELECT * FROM event WHERE id = ?""", (event_id,)).fetchone()
 
         if event is None:
             return None
@@ -77,9 +77,9 @@ class Event:
         events = db.execute(
             """SELECT e.*, l.address, l.city, l.state, l.zip_code,
                       COUNT(p.prerequisite_event_id) as prereq_count
-               FROM events e
-               LEFT JOIN locations l ON e.location_id = l.id
-               LEFT JOIN prerequisites p ON e.id = p.event_id
+               FROM event e
+               LEFT JOIN location l ON e.location_id = l.id
+               LEFT JOIN prerequisite p ON e.id = p.event_id
                GROUP BY e.id
                ORDER BY e.date DESC"""
         ).fetchall()
@@ -90,8 +90,8 @@ class Event:
         db = get_db()
         events = db.execute(
             """SELECT e.*, l.address, l.city, l.state, l.zip_code
-               FROM events e
-               LEFT JOIN locations l ON e.location_id = l.id
+               FROM event e
+               LEFT JOIN location l ON e.location_id = l.id
                WHERE e.activity_group_name = ?
                ORDER BY e.date DESC""",
             (activity_group_name,),
@@ -103,8 +103,8 @@ class Event:
         db = get_db()
         prerequisites = db.execute(
             """SELECT p.*, e.activity_group_name, e.date
-               FROM prerequisites p
-               JOIN events e ON p.prerequisite_event_id = e.id
+               FROM prerequisite p
+               JOIN event e ON p.prerequisite_event_id = e.id
                WHERE p.event_id = ?""",
             (event_id,),
         ).fetchall()
@@ -113,7 +113,7 @@ class Event:
     def update(self):
         db = get_db()
         db.execute(
-            """UPDATE events
+            """UPDATE event
                SET activity_group_name = ?,
                    date = ?,
                    location_id = ?,
@@ -137,5 +137,5 @@ class Event:
 
     def delete(self):
         db = get_db()
-        db.execute("DELETE FROM events WHERE id = ?", (self.id,))
+        db.execute("DELETE FROM event WHERE id = ?", (self.id,))
         db.commit()
