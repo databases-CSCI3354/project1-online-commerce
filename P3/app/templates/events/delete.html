@@ -5,6 +5,6 @@
   <p>Are you sure you want to delete the event <strong>{{ event.activity_group_name }}</strong> on {{ event.date }}?</p>
   <form method="post">
     <button type="submit">Yes, Delete</button>
-    <a href="{{ url_for('events.view_event', event_id=event.id) }}">Cancel</a>
+    <a href="{{ url_for('events.view_event', event_id=event.event_id) }}">Cancel</a>
   </form>
 {% endblock %} 

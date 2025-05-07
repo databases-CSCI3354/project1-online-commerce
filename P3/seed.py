@@ -5,15 +5,37 @@ from flask_bcrypt import Bcrypt
 DB_PATH = os.path.join(os.path.dirname(__file__), 'app', 'activity.db')
 bcrypt = Bcrypt()
 hashed_password = bcrypt.generate_password_hash('testpass').decode('utf-8')
+print(f"[DEBUG] Using hashed password for testuser: {hashed_password}")
 
 conn = sqlite3.connect(DB_PATH)
 c = conn.cursor()
 
-# Insert a test resident (user)
+# Insert a test resident (user) with bcrypt hash
 c.execute("""
 INSERT OR IGNORE INTO resident (resident_id, name, email, phone_number, interests, date_of_birth, profile_image, username, hashed_password)
 VALUES (1, 'Test User', 'test@example.com', '555-1234', 'music,sports', '2000-01-01', NULL, 'testuser', ?)
 """, (hashed_password,))
+
+# Always update the test user's password and username to ensure login works after reseeding
+c.execute("""
+UPDATE resident
+SET username = 'testuser', hashed_password = ?
+WHERE resident_id = 1
+""", (hashed_password,))
+
+# Insert more residents for registration testing
+c.execute("""
+INSERT OR IGNORE INTO resident (resident_id, name, email, phone_number, interests, date_of_birth, profile_image)
+VALUES (2, 'Alice Smith', 'alice@example.com', '555-2001', 'books,travel', '1995-04-12', NULL)
+""")
+c.execute("""
+INSERT OR IGNORE INTO resident (resident_id, name, email, phone_number, interests, date_of_birth, profile_image)
+VALUES (3, 'Bob Lee', 'bob@example.com', '555-2002', 'sports,chess', '1992-08-23', NULL)
+""")
+c.execute("""
+INSERT OR IGNORE INTO resident (resident_id, name, email, phone_number, interests, date_of_birth, profile_image)
+VALUES (4, 'Carol Nguyen', 'carol@example.com', '555-2003', 'food,technology', '1988-11-30', NULL)
+""")
 
 # Insert a test activity group
 c.execute("""

@@ -18,7 +18,8 @@ def create_app():
     app = Flask(__name__, instance_relative_config=True)
     secret_key = secrets.token_hex(32)
     app.secret_key = secret_key
-    app.config["DATABASE"] = os.path.join(app.root_path, "activity.db")
+    app.config["DATABASE"] = os.path.abspath(os.path.join(os.path.dirname(__file__), "activity.db"))
+    print(f"[DEBUG] Flask app using database at: {app.config['DATABASE']}")
 
     # Disable template caching during testing
     app.config["TESTING"] = True
@@ -31,7 +32,8 @@ def create_app():
     # Initialize Flask-Login
     login_manager = LoginManager()
     login_manager.init_app(app)
-    login_manager.login_view = "auth.login"
+    login_manager.login_view = None  # Initialize as None first
+    login_manager.login_view = "auth.login"  # Then set the string value
 
     @login_manager.user_loader
     def load_user(user_id):
