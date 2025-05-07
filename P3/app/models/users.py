@@ -31,17 +31,22 @@ class User(UserMixin):
             (username,),
         ).fetchone()
 
+        print(f"[DEBUG] DB user: {user}")
+        if user is not None:
+            print(f"[DEBUG] Hash in DB: {user['hashed_password']}")
+
         if user is None:
             return None
 
         if bcrypt.check_password_hash(user["hashed_password"], password):
+            print("[DEBUG] Password check: SUCCESS")
             return User(
                 user["resident_id"],
                 user["username"],
                 user["resident_id"],
                 user["hashed_password"],
             )
-
+        print("[DEBUG] Password check: FAIL")
         return None
 
     @staticmethod

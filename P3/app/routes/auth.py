@@ -1,4 +1,5 @@
 import sqlite3
+import os
 
 from flask import Blueprint, current_app, flash, g, redirect, render_template, request, url_for
 from flask_bcrypt import Bcrypt
@@ -9,18 +10,10 @@ from app.models.users import User
 auth_bp = Blueprint("auth", __name__)
 bcrypt = Bcrypt()
 
-DATABASE = "./dist/activity.db"
-
-
-def connect_db():
-    return sqlite3.connect(DATABASE)
-
-
 def get_db():
     if "db" not in g:
         g.db = sqlite3.connect(current_app.config["DATABASE"], detect_types=sqlite3.PARSE_DECLTYPES)
         g.db.row_factory = sqlite3.Row
-
     return g.db
 
 
@@ -30,8 +23,10 @@ def login():
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
+        print(f"[DEBUG] Login attempt: username={username}, password={password}")
 
         user = User.validate(username, password)
+        print(f"[DEBUG] User.validate returned: {user}")
         if user:
             login_user(user)
             return redirect(url_for("main.index"))
