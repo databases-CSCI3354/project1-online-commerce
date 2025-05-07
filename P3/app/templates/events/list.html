@@ -20,7 +20,7 @@
                 <div class="text-gray-600 mb-4">
                     <p><strong>Date:</strong> {{ event.date }}</p>
                     {% if event.location_id %}
-                    <p><strong>Location:</strong> {{ event.address }}, {{ event.city }}</p>
+                    <p><strong>Location:</strong> {{ event.address }}, {{ event.city }}, {{ event.state }} {{ event.zip_code }}</p>
                     {% endif %}
                     {% if event.max_participants %}
                     <p><strong>Max Participants:</strong> {{ event.max_participants }}</p>
@@ -49,7 +49,7 @@
                 </div>
                 {% endif %}
                 <div class="mt-4">
-                    <a href="{{ url_for('events.view_event', event_id=event.id) }}"
+                    <a href="{{ url_for('events.view_event', event_id=event.event_id) }}"
                        class="text-blue-500 hover:text-blue-700">
                         View Details →
                     </a>
