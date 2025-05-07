@@ -1,7 +1,10 @@
 import sqlite3
 import os
+from flask_bcrypt import Bcrypt
 
 DB_PATH = os.path.join(os.path.dirname(__file__), 'app', 'activity.db')
+bcrypt = Bcrypt()
+hashed_password = bcrypt.generate_password_hash('testpass').decode('utf-8')
 
 conn = sqlite3.connect(DB_PATH)
 c = conn.cursor()
@@ -9,8 +12,8 @@ c = conn.cursor()
 # Insert a test resident (user)
 c.execute("""
 INSERT OR IGNORE INTO resident (resident_id, name, email, phone_number, interests, date_of_birth, profile_image, username, hashed_password)
-VALUES (1, 'Test User', 'test@example.com', '555-1234', 'music,sports', '2000-01-01', NULL, 'testuser', '$2b$12$CcvdZh0IiIq06KCTOdUDSOj7phxV1WgzKFteiaJVUl23/W38p7msG')
-""")
+VALUES (1, 'Test User', 'test@example.com', '555-1234', 'music,sports', '2000-01-01', NULL, 'testuser', ?)
+""", (hashed_password,))
 
 # Insert a test activity group
 c.execute("""
