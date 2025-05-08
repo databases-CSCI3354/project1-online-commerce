@@ -47,7 +47,7 @@ To see our embedded google maps iframe, you can create a Google Maps API key on 
 
 ```bash
 # Quick Start at root directory
-flask run
+python -m flask run
 
 # Run tests
 python -m pytest
