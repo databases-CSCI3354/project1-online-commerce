@@ -116,7 +116,7 @@ class Review:
             """SELECT r.*, u.name as resident_name
                FROM review r
                JOIN resident u ON r.resident_id = u.resident_id
-               WHERE r.activity_group_name = ? AND r.is_deleted = 0
+               WHERE r.activity_group_name = ?
                ORDER BY r.review_date DESC
                LIMIT ? OFFSET ?""",
             (activity_group_name, per_page, offset),
@@ -132,7 +132,7 @@ class Review:
             """SELECT r.*, ag.name as activity_group_name
                FROM review r
                JOIN activity_group ag ON r.activity_group_name = ag.name
-               WHERE r.resident_id = ? AND r.is_deleted = 0
+               WHERE r.resident_id = ?
                ORDER BY r.review_date DESC
                LIMIT ? OFFSET ?""",
             (resident_id, per_page, offset),
@@ -145,7 +145,7 @@ class Review:
         result = db.execute(
             """SELECT AVG(star_rating) as avg_rating
                FROM review
-               WHERE activity_group_name = ? AND is_deleted = 0""",
+               WHERE activity_group_name = ?""",
             (activity_group_name,),
         ).fetchone()
         return result["avg_rating"] if result["avg_rating"] is not None else 0
