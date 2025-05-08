@@ -25,6 +25,14 @@ def admin_required(f):
 def list_events():
     search_query = request.args.get("q", "").strip()
     events = Event.get_all(search_query=search_query)
+    # Add registered_count to each event
+    for event in events:
+        db = get_db()
+        count = db.execute(
+            "SELECT COUNT(*) FROM registrations WHERE event_id = ? AND status = 'registered'",
+            (event['id'],)
+        ).fetchone()[0]
+        event['registered_count'] = count
     return render_template("events/list.html", events=events, search_query=search_query)
 
 
