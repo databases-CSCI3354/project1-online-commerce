@@ -1,93 +1,132 @@
-# Databases Project 3 - Professor Aviram
+# Databases Project 3 - Connecting Boston: Local Activity Group Web App
 
-## Overview of Project
+## Overview
 
-### Team Members and Roles
+This project delivers a lightweight, real-world web application that helps Boston residents find and participate in local activity groups. It solves the problem of scattered or inaccessible group listings by offering a centralized, intuitive platform where users can join activities, register for events, and leave feedback.
 
-- Jin Yang Chen: Development Engineer
-- Omer Yurekli: Testing & Development Engineeer
-- Salamun Nuhin: Testing & Development Engineer
-- Omar Tall: General Developer
-- Arona Gaye: General Developer
-- Abraham Chang: Documentation
+Organizers benefit from tools that help them manage sessions, track membership, and gather insights from reviews. The backend is built in Flask with a normalized SQLite database and a user-friendly HTML/CSS/Jinja2 frontend.
 
-## Quick Start
+Key capabilities:
+- Discover and filter groups by interest, cost, frequency, and age group
+- Register for events and track participation
+- Leave reviews (feature in progress)
+- Enable organizers to manage groups, schedule events, and oversee engagement
 
-### Create and activate Python virtual environment
+---
 
+## Team Members and Roles
+
+- **Jin Yang Chen** – Development Engineer
+- **Omer Yurekli** – Backend Testing & Development Engineer
+- **Salamun Nuhin** – Testing & Development Engineer
+- **Omar Tall** – General Developer
+- **Arona Gaye** – General Developer
+- **Abraham Chang** – Documentation
+
+---
+
+## Quick Start: Deployment Instructions
+
+### 1. Clone the Repository
 ```bash
-
-python3 -m venv .venv
-
-# on macOS/Linux
-source .venv/bin/activate
-
-# on Windows
-.venv\Scripts\activate
+git clone https://github.com/databases-CSCI3354/project1-online-commerce.git
+cd project1-online-commerce/P3
 ```
 
-### Install dependencies
+### 2. Create and Activate a Python Virtual Environment
+```bash
+python3 -m venv .venv
+source .venv/bin/activate  # for Linux/macOS
+```
 
+### 3. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### Set up environment variables
-
+### 4. Environment Variables
 ```bash
-# Create .env file (by copying from .env.example)
 cp .env.example .env
 ```
 
-### Add Google Maps API Key (Optional)
-
-To see our embedded google maps iframe, you can create a Google Maps API key on google clouds services and add that to the .env file.
-
-## Commands
-
+### 5. Run the Application
 ```bash
-# Quick Start at root directory
-python -m flask run
+flask run
+```
 
-# Run tests
+---
+
+## Testing
+
+We use `pytest` for all unit and integration tests.
+Run:
+```bash
 python -m pytest
 ```
 
-## Development
-
-### Add dependencies
-
-If you want to add a new dependency, please use `make add-<dependency>` command.
-
-For example, to add `python-dotenv` dependency, run:
-
+Linting:
 ```bash
-make add-python-dotenv
+make lint
 ```
 
-The above command will add the dependency to the `requirements.txt` file and install it in your current environment. If not, you will need to manually freeze your environment at the end.
-
-## Style Enforcement
-
-```bash
-make lint # Run in the root of the directory
+Test layout:
+```
+tests/
+├── routes/            # HTTP route tests
+├── services/          # Logic-level tests
+├── integration_test.py
+└── conftest.py
 ```
 
-## Folder Structure
+---
 
-```bash
-├── app/
-│   ├── models/ # Data models used across the application
-│   ├── routes/ # Routes handle the HTTP requests and render the appropriate templates (no business logic)
-│   ├── services/ # Services handle the business logic of the application
-│   ├── static/ # Static files like CSS
-│   ├── templates/ # Jinja templates
-│   ├── utils/ # Utility functions that are used across the entire application
-│   ├── activity.db # Built database file
-│   └── run.py # Main executuable file
-└── tests/ # Tests for each file are labelled with the file name
-    ├── routes/ # Tests for route handlers
-    ├── services/ # Tests for service layer
-    ├── integration_test.py # End-to-end tests
-    └── conftest.py # Test fixtures and configuration
-```
+## E-R Diagram and Schema Summary
+
+### Entities and Attributes
+- **Users**: `id (PK)`, `username`, `email`, `hashed_password`
+- **Groups**: `id (PK)`, `name`, `description`, `category`, `cost`
+- **Events**: `id (PK)`, `group_id (FK)`, `title`, `date`, `location`
+- **Registrations**: `id (PK)`, `user_id (FK)`, `event_id (FK)`, `status`
+- **Reviews** (in dev): `id (PK)`, `user_id (FK)`, `group_id (FK)`, `star_rating`, `comment`
+
+### Design Notes:
+- One user can join multiple groups
+- Events can have sessions and prerequisites
+- Form-based UI enables DB interaction
+- Authenticated users can only modify their own data
+
+---
+
+## Features
+
+-  Secure login system using Flask-Login and Flask-Bcrypt
+-  MVC design and reusable route logic
+-  Flash messaging and form validation for UX
+-  Role-based access and cookie session handling
+-  Strong test coverage and automated linting
+
+---
+
+## Not Fully Implemented Yet
+- Session handling
+- Waitlists and notifications
+- Direct event registration via site interface
+
+---
+
+## Lessons Learned
+
+- Securing authentication while keeping the app minimal is tricky
+- Early ER design simplifies future schema expansions
+- Linting and automation tools streamlined development and debugging
+
+---
+
+## Presentation Materials
+
+The full project slide deck is available in the `/presentation` folder of the repo. It includes:
+- Problem background
+- E-R diagram
+- Schema breakdown
+- Application flow
+- Demo examples
