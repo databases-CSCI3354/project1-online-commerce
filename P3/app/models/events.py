@@ -36,6 +36,8 @@ class Event:
         registration_required,
         registration_deadline,
     ):
+        if max_participants < 0 or cost < 0:
+            raise ValueError("Max participants and cost must be non-negative")
         db = get_db()
         cursor = db.cursor()
         cursor.execute(
@@ -178,6 +180,17 @@ class Event:
         )
         db.commit()
         return {"success": True, "message": "Event is full. Added to the waitlist"}
+
+    def soft_delete(self):
+        """Mark the event as deleted instead of hard deleting."""
+        db = get_db()
+        db.execute(
+            """UPDATE events
+               SET is_deleted = 1
+               WHERE id = ?""",
+            (self.id,),
+        )
+        db.commit()
 
     @staticmethod
     def notify_waitlist(event_id):

@@ -50,10 +50,53 @@ class User(UserMixin):
         return None
 
     @staticmethod
+    def create(username, resident_id, password):
+        """Create a new user with hashed password."""
+        if not username or not password:
+            raise ValueError("Username and password are required")
+        db = User.get_db()
+        hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
+        cursor = db.cursor()
+        cursor.execute(
+            """INSERT INTO resident (username, resident_id, hashed_password)
+               VALUES (?, ?, ?)""",
+            (username, resident_id, hashed_password),
+        )
+        db.commit()
+        return cursor.lastrowid
+
+    def update_password(self, new_password):
+        """Update the user's password."""
+        if not new_password:
+            raise ValueError("Password cannot be empty")
+        db = User.get_db()
+        hashed_password = bcrypt.generate_password_hash(new_password).decode("utf-8")
+        db.execute(
+            """UPDATE resident
+               SET hashed_password = ?
+               WHERE resident_id = ?""",
+            (hashed_password, self.resident_id),
+        )
+        db.commit()
+
+    def soft_delete(self):
+        """Mark the user as deleted instead of hard deleting."""
+        db = User.get_db()
+        db.execute(
+            """UPDATE resident
+               SET is_deleted = 1
+               WHERE resident_id = ?""",
+            (self.resident_id,),
+        )
+        db.commit()
+
+    @staticmethod
     def get(user_id):
         db = User.get_db()
         user = db.execute(
-            "SELECT resident_id, username, hashed_password FROM resident WHERE resident_id = ?",
+            """SELECT resident_id, username, hashed_password
+               FROM resident
+               WHERE resident_id = ? AND is_deleted = 0""",
             (user_id,),
         ).fetchone()
 

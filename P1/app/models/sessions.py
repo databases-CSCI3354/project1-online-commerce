@@ -12,15 +12,11 @@ class Session:
 
     @staticmethod
     def create(activity_group_name, event_id, date, attendance, agenda):
-        if attendance < 0:
-            raise ValueError("Attendance must be non-negative")
-        if not activity_group_name or not event_id or not date:
-            raise ValueError("Activity group name, event ID, and date are required")
         db = get_db()
         cursor = db.cursor()
         cursor.execute(
-            """INSERT INTO session (activity_group_name, event_id, date, attendance, agenda, is_deleted)
-               VALUES (?, ?, ?, ?, ?, 0)""",
+            """INSERT INTO session (activity_group_name, event_id, date, attendance, agenda)
+               VALUES (?, ?, ?, ?, ?)""",
             (activity_group_name, event_id, date, attendance, agenda),
         )
         db.commit()
@@ -30,7 +26,7 @@ class Session:
     def get(session_id):
         db = get_db()
         session = db.execute(
-            """SELECT * FROM session WHERE id = ? AND is_deleted = 0""", (session_id,)
+            """SELECT * FROM session WHERE id = ?""", (session_id,)
         ).fetchone()
 
         if session is None:
@@ -46,41 +42,26 @@ class Session:
         )
 
     @staticmethod
-    def get_all(page=1, per_page=10):
-        """Fetch all sessions with pagination."""
+    def get_all():
         db = get_db()
-        offset = (page - 1) * per_page
-        sessions = db.execute(
-            """SELECT * FROM session
-               WHERE is_deleted = 0
-               ORDER BY date DESC
-               LIMIT ? OFFSET ?""",
-            (per_page, offset),
-        ).fetchall()
+        sessions = db.execute("""SELECT * FROM session ORDER BY date DESC""").fetchall()
         return sessions
 
     @staticmethod
-    def get_by_event(event_id, page=1, per_page=10):
-        """Fetch sessions by event ID with pagination."""
+    def get_by_event(event_id):
         db = get_db()
-        offset = (page - 1) * per_page
         sessions = db.execute(
-            """SELECT * FROM session
-               WHERE event_id = ? AND is_deleted = 0
-               ORDER BY date DESC
-               LIMIT ? OFFSET ?""",
-            (event_id, per_page, offset),
+            """SELECT * FROM session WHERE event_id = ? ORDER BY date DESC""",
+            (event_id,),
         ).fetchall()
         return sessions
 
     def update(self):
-        if self.attendance < 0:
-            raise ValueError("Attendance must be non-negative")
         db = get_db()
         db.execute(
             """UPDATE session
                SET activity_group_name = ?, event_id = ?, date = ?, attendance = ?, agenda = ?
-               WHERE id = ? AND is_deleted = 0""",
+               WHERE id = ?""",
             (
                 self.activity_group_name,
                 self.event_id,
@@ -92,13 +73,7 @@ class Session:
         )
         db.commit()
 
-    def soft_delete(self):
-        """Mark the session as deleted instead of hard deleting."""
+    def delete(self):
         db = get_db()
-        db.execute(
-            """UPDATE session
-               SET is_deleted = 1
-               WHERE id = ?""",
-            (self.id,),
-        )
+        db.execute("DELETE FROM session WHERE id = ?", (self.id,))
         db.commit()

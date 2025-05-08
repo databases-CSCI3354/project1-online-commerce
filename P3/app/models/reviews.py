@@ -29,6 +29,8 @@ class Review:
         review_date,
         is_verified=0,
     ):
+        if not (1 <= star_rating <= 5):
+            raise ValueError("Star rating must be between 1 and 5")
         db = get_db()
         cursor = db.cursor()
         cursor.execute(
@@ -67,33 +69,9 @@ class Review:
             is_verified=review["is_verified"],
         )
 
-    @staticmethod
-    def get_by_activity_group(activity_group_name):
-        db = get_db()
-        reviews = db.execute(
-            """SELECT r.*, u.name as resident_name
-               FROM review r
-               JOIN resident u ON r.resident_id = u.resident_id
-               WHERE r.activity_group_name = ?
-               ORDER BY r.review_date DESC""",
-            (activity_group_name,),
-        ).fetchall()
-        return reviews
-
-    @staticmethod
-    def get_by_resident(resident_id):
-        db = get_db()
-        reviews = db.execute(
-            """SELECT r.*, ag.name as activity_group_name
-               FROM review r
-               JOIN activity_group ag ON r.activity_group_name = ag.name
-               WHERE r.resident_id = ?
-               ORDER BY r.review_date DESC""",
-            (resident_id,),
-        ).fetchall()
-        return reviews
-
     def update(self):
+        if not (1 <= self.star_rating <= 5):
+            raise ValueError("Star rating must be between 1 and 5")
         db = get_db()
         db.execute(
             """UPDATE review
@@ -112,10 +90,48 @@ class Review:
         )
         db.commit()
 
-    def delete(self):
+    def soft_delete(self):
+        """Mark the review as deleted instead of hard deleting."""
         db = get_db()
-        db.execute("DELETE FROM review WHERE review_id = ?", (self.review_id,))
+        db.execute(
+            """UPDATE review
+               SET is_deleted = 1
+               WHERE review_id = ?""",
+            (self.review_id,),
+        )
         db.commit()
+
+    @staticmethod
+    def get_by_activity_group(activity_group_name, page=1, per_page=10):
+        """Fetch reviews for an activity group with pagination."""
+        db = get_db()
+        offset = (page - 1) * per_page
+        reviews = db.execute(
+            """SELECT r.*, u.name as resident_name
+               FROM review r
+               JOIN resident u ON r.resident_id = u.resident_id
+               WHERE r.activity_group_name = ? AND r.is_deleted = 0
+               ORDER BY r.review_date DESC
+               LIMIT ? OFFSET ?""",
+            (activity_group_name, per_page, offset),
+        ).fetchall()
+        return reviews
+
+    @staticmethod
+    def get_by_resident(resident_id, page=1, per_page=10):
+        """Fetch reviews by a resident with pagination."""
+        db = get_db()
+        offset = (page - 1) * per_page
+        reviews = db.execute(
+            """SELECT r.*, ag.name as activity_group_name
+               FROM review r
+               JOIN activity_group ag ON r.activity_group_name = ag.name
+               WHERE r.resident_id = ? AND r.is_deleted = 0
+               ORDER BY r.review_date DESC
+               LIMIT ? OFFSET ?""",
+            (resident_id, per_page, offset),
+        ).fetchall()
+        return reviews
 
     @staticmethod
     def get_average_rating(activity_group_name):
@@ -123,7 +139,7 @@ class Review:
         result = db.execute(
             """SELECT AVG(star_rating) as avg_rating
                FROM review
-               WHERE activity_group_name = ?""",
+               WHERE activity_group_name = ? AND is_deleted = 0""",
             (activity_group_name,),
         ).fetchone()
-        return result["avg_rating"] if result["avg_rating"] is not None else 0 
+        return result["avg_rating"] if result["avg_rating"] is not None else 0
