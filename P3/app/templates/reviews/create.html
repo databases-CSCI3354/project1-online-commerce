@@ -1,35 +1,27 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1>Write a Review for {{ activity_group_name }}</h1>
-
-    <form method="POST" class="mt-4">
-        <div class="mb-3">
-            <label for="star_rating" class="form-label">Rating</label>
-            <div class="rating-input">
-                {% for i in range(5) %}
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="star_rating" 
-                           id="star{{ i+1 }}" value="{{ i+1 }}" required>
-                    <label class="form-check-label" for="star{{ i+1 }}">
-                        {{ i+1 }} Star{% if i != 0 %}s{% endif %}
-                    </label>
-                </div>
+<div style="max-width: 420px; margin: 2rem auto; background: #fff; padding: 2rem 2.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+    <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; text-align: center;">Write a Review for {{ activity_group_name }}</h2>
+    <form method="POST">
+        <div style="margin-bottom: 1.5rem;">
+            <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;">Rating</label>
+            <div style="display: flex; gap: 1rem;">
+                {% for i in range(1, 6) %}
+                <label style="display: flex; align-items: center; gap: 0.25rem; font-weight: 500;">
+                    <input type="radio" name="star_rating" value="{{ i }}" required {% if i == 5 %}checked{% endif %}>
+                    {{ i }}<span style="color: #fbbf24;">★</span>
+                </label>
                 {% endfor %}
             </div>
         </div>
-
-        <div class="mb-3">
-            <label for="content" class="form-label">Your Review</label>
-            <textarea class="form-control" id="content" name="content" rows="5" 
-                      required placeholder="Share your experience with this activity group..."></textarea>
+        <div style="margin-bottom: 1.5rem;">
+            <label for="content" style="font-weight: 600; margin-bottom: 0.5rem; display: block;">Your Review</label>
+            <textarea id="content" name="content" rows="4" required placeholder="Share your experience..." style="width: 100%; border-radius: 8px; border: 1px solid #d1d5db; padding: 0.75rem; font-size: 1rem;"></textarea>
         </div>
-
-        <div class="mb-3">
-            <button type="submit" class="btn btn-primary">Submit Review</button>
-            <a href="{{ url_for('reviews.list_reviews', name=activity_group_name) }}" 
-               class="btn btn-outline-secondary">Cancel</a>
+        <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+            <button type="submit" style="background: #2563eb; color: #fff; border: none; border-radius: 6px; padding: 0.5rem 1.2rem; font-weight: 600; cursor: pointer;">Submit Review</button>
+            <a href="{{ url_for('reviews.list_reviews', name=activity_group_name) }}" style="background: #f3f4f6; color: #2563eb; border-radius: 6px; padding: 0.5rem 1.2rem; font-weight: 600; text-decoration: none; border: none;">Cancel</a>
         </div>
     </form>
 </div>
