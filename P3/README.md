@@ -1,6 +1,6 @@
-# Databases Project 3 - Connecting Boston: Local Activity Group Web App
+# Connecting Boston: Local Activity Group Web App
 
-## Overview
+## 📘 Overview
 
 This project delivers a lightweight, real-world web application that helps Boston residents find and participate in local activity groups. It solves the problem of scattered or inaccessible group listings by offering a centralized, intuitive platform where users can join activities, register for events, and leave feedback.
 
@@ -14,7 +14,23 @@ Key capabilities:
 
 ---
 
-## Team Members and Roles
+## 📊 Recent Feature Additions
+
+Following the latest commits, the application has been extended to support several major features:
+
+- ✅ **Admin Dashboard**: A dedicated view for admins to manage events and oversee user activity.
+- 👤 **User Profiles**: Each user now has an associated profile for personalization and data management.
+- 🔄 **Prerequisite Tracking**: Events can now specify required prerequisite events.
+- 🕒 **Waitlist Functionality**: Users can be placed on a waitlist when events are full.
+- 📥 **Registration System**: Users can now register for events directly via the site interface.
+- 👀 **User and Admin Views**: The interface dynamically changes based on user role, separating admin and participant capabilities.
+- 🔔 **User Notifications**: The app now supports sending notifications related to registration and waitlist status.
+
+These features significantly enhance user experience, data flow, and platform scalability.
+
+---
+
+## 👥 Team Members and Roles
 
 - **Jin Yang Chen** – Development Engineer
 - **Omer Yurekli** – Backend Testing & Development Engineer
@@ -25,7 +41,7 @@ Key capabilities:
 
 ---
 
-## Quick Start: Deployment Instructions
+## 🚀 Quick Start: Deployment Instructions
 
 ### 1. Clone the Repository
 ```bash
@@ -56,7 +72,7 @@ flask run
 
 ---
 
-## Testing
+## 🧪 Testing
 
 We use `pytest` for all unit and integration tests.
 Run:
@@ -80,7 +96,7 @@ tests/
 
 ---
 
-## E-R Diagram and Schema Summary
+## 🗂️ E-R Diagram and Schema Summary
 
 ### Entities and Attributes
 - **Users**: `id (PK)`, `username`, `email`, `hashed_password`
@@ -97,24 +113,22 @@ tests/
 
 ---
 
-## Features
+## ✨ Features
 
--  Secure login system using Flask-Login and Flask-Bcrypt
--  MVC design and reusable route logic
--  Flash messaging and form validation for UX
--  Role-based access and cookie session handling
--  Strong test coverage and automated linting
-
----
-
-## Not Fully Implemented Yet
-- Session handling
-- Waitlists and notifications
-- Direct event registration via site interface
+- 🔐 Secure login system using Flask-Login and Flask-Bcrypt
+- 🧠 MVC design and reusable route logic
+- 💬 Flash messaging and form validation for UX
+- 🔁 Role-based access and cookie session handling
+- 🧪 Strong test coverage and automated linting
 
 ---
 
-## Lessons Learned
+## ⚠️ Not Fully Implemented Yet
+- Session handling (partial)
+
+---
+
+## 📚 Lessons Learned
 
 - Securing authentication while keeping the app minimal is tricky
 - Early ER design simplifies future schema expansions
