@@ -7,6 +7,9 @@
 - Jin Yang Chen: Development Engineer
 - Omer Yurekli: Testing & Development Engineeer
 - Salamun Nuhin: Testing & Development Engineer
+- Omar Tall: General Developer
+- Arona Gaye: General Developer
+- Abraham Chang: Documentation
 
 ## Quick Start
 
