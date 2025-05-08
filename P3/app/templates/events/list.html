@@ -3,68 +3,70 @@
 {% block content %}
 <div class="container mx-auto px-4 py-8">
     <div class="flex flex-col items-center mb-8">
-        <h1 class="text-3xl font-bold text-center">Events</h1>
+        <h1 class="text-4xl font-extrabold text-center text-blue-800 drop-shadow mb-2">Events</h1>
         {% if current_user.is_authenticated %}
         <a href="{{ url_for('events.create_event') }}"
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">
+            class="btn-gradient flex items-center gap-2 mt-4 shadow-lg">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
             Create Event
         </a>
         {% endif %}
     </div>
 
-    <form method="get" action="{{ url_for('events.list_events') }}" class="max-w-4xl mx-auto mb-8 flex flex-wrap items-center gap-2 bg-white shadow-md rounded-lg p-4">
+    <form method="get" action="{{ url_for('events.list_events') }}" class="max-w-4xl mx-auto mb-8 flex flex-wrap items-center gap-2 bg-white/80 shadow-xl rounded-2xl p-4 glass-card">
         <input
           type="text"
           name="search"
           value="{{ request.args.get('search', '') }}"
           placeholder="Search events…"
-          class="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/80 shadow-sm"
         />
         <input
           type="date"
           name="start_date"
           value="{{ request.args.get('start_date', '') }}"
-          class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/80 shadow-sm"
         />
         <input
           type="date"
           name="end_date"
           value="{{ request.args.get('end_date', '') }}"
-          class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/80 shadow-sm"
         />
         <button
           type="submit"
-          class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+          class="btn-gradient flex items-center gap-2"
         >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg>
           Search
         </button>
     </form>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {% for event, location in event_locations %}
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
-            <div class="p-6">
-                <h2 class="text-xl font-semibold mb-2">{{ event.activity_group_name }}</h2>
-                <div class="text-gray-600 mb-4">
-                    <p><strong>Date:</strong> {{ event.date }}</p>
+        <div class="glass-card p-0 overflow-hidden animate-fadeIn">
+            <div class="p-6 flex flex-col h-full">
+                <h2 class="text-2xl font-bold mb-2 text-gray-800 flex items-center gap-2">
+                  <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                  {{ event.activity_group_name }}
+                </h2>
+                <div class="text-gray-600 mb-4 space-y-1">
+                    <p class="flex items-center gap-2"><svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg><strong>Date:</strong> {{ event.date }}</p>
                     {% if location and location.address %}
-                    <p><strong>Location:</strong> {{ location.address }}, {{ location.city }}, {{ location.state }} {{ location.zip_code }}</p>
-                    <iframe width="100%" height="200" frameborder="0" style="border:0"
-                        src="{{ location.get_google_maps_embed_url() }}" allowfullscreen>
-                    </iframe>
+                    <p class="flex items-center gap-2"><svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 12.414a4 4 0 10-5.657 5.657l4.243 4.243a8 8 0 1011.314-11.314l-4.243 4.243z"/></svg><strong>Location:</strong> {{ location.address }}, {{ location.city }}, {{ location.state }} {{ location.zip_code }}</p>
+                    <iframe width="100%" height="180" frameborder="0" style="border:0;border-radius:0.75rem;"
+                        src="{{ location.get_google_maps_embed_url() }}" allowfullscreen class="my-2 shadow"></iframe>
                     {% endif %}
                     {% if event.max_participants %}
-                    <p><strong>Max Participants:</strong> {{ event.max_participants }}</p>
+                    <p class="flex items-center gap-2"><svg class="w-5 h-5 text-pink-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m9-4a4 4 0 11-8 0 4 4 0 018 0z"/></svg><strong>Max Participants:</strong> {{ event.max_participants }}</p>
                     {% endif %}
                     {% if event.cost %}
-                    <p><strong>Cost:</strong> ${{ event.cost }}</p>
+                    <p class="flex items-center gap-2"><svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zm0 0V4m0 8v8"/></svg><strong>Cost:</strong> ${{ event.cost }}</p>
                     {% endif %}
                 </div>
                 {% if event.registration_required %}
                 <div class="mb-4">
-                    <span class="bg-yellow-100 text-yellow-800 text-sm font-medium px-2.5 py-0.5 rounded">
-                        Registration Required
-                    </span>
+                    <span class="badge">Registration Required</span>
                     {% if event.registration_deadline %}
                     <p class="text-sm text-gray-500 mt-1">
                         Deadline: {{ event.registration_deadline }}
@@ -74,15 +76,14 @@
                 {% endif %}
                 {% if event.prereq_count > 0 %}
                 <div class="mb-4">
-                    <span class="bg-purple-100 text-purple-800 text-sm font-medium px-2.5 py-0.5 rounded">
-                        Has Prerequisites
-                    </span>
+                    <span class="badge bg-purple-100 text-purple-800">Has Prerequisites</span>
                 </div>
                 {% endif %}
-                <div class="mt-4">
+                <div class="mt-auto pt-4">
                     <a href="{{ url_for('events.view_event', event_id=event.event_id) }}"
-                        class="text-blue-500 hover:text-blue-700">
-                        View Details →
+                        class="btn-gradient inline-flex items-center gap-2 text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                        View Details
                     </a>
                 </div>
             </div>
