@@ -161,3 +161,20 @@ def manage_prerequisites(event_id):
         prerequisites=prerequisites,
         other_events=other_events,
     )
+
+
+@events_bp.route("/events/<int:event_id>/notify_waitlist", methods=["POST"])
+@login_required
+def notify_waitlist(event_id):
+    result = Event.notify_waitlist(event_id)
+    flash(result["message"], "success" if result["success"] else "error")
+    return redirect(url_for("events.view_event", event_id=event_id))
+
+
+@events_bp.route("/events/<int:event_id>/confirm_waitlist", methods=["POST"])
+@login_required
+def confirm_waitlist(event_id):
+    user_id = request.form.get("user_id", type=int)
+    result = Event.confirm_waitlist(event_id, user_id)
+    flash(result["message"], "success" if result["success"] else "error")
+    return redirect(url_for("events.view_event", event_id=event_id))

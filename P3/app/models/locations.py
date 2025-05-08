@@ -74,3 +74,8 @@ class Location:
             (search_term, search_term, search_term, search_term),
         ).fetchall()
         return locations
+
+    def get_google_maps_embed_url(self):
+        """Generate a Google Maps embed URL for the location."""
+        query = f"{self.address}, {self.city}, {self.state}, {self.zip_code}"
+        return f"https://www.google.com/maps/embed/v1/place?key=YOUR_GOOGLE_MAPS_API_KEY&q={query.replace(' ', '+')}"

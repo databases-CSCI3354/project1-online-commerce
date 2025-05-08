@@ -143,3 +143,144 @@ class Event:
         db = get_db()
         db.execute("DELETE FROM event WHERE event_id = ?", (self.id,))
         db.commit()
+    
+    @staticmethod
+    def event_registration(event_id, user_id):
+        db = get_db()
+        event = db.execute(
+            """SELECT max_participants, 
+                      (SELECT count(*) FROM registrations WHERE event_id = ?) AS current_participants
+               FROM events WHERE id = ?""",
+            (event_id, event_id)
+        ).fetchone()
+
+        if not event:
+            return {"success": False, "message": "Event not found"}
+
+        if event["current_participants"] < event["max_participants"]:
+            db.execute(
+                """INSERT INTO registrations (event_id, user_id)
+                   VALUES (?, ?)""",
+                (event_id, user_id),
+            )
+            db.commit()
+            return {"success": True, "message": "Successfully registered for the event"}
+
+        # Check if the user is already on the waitlist
+        if Event.get_waitlist(user_id, event_id):
+            return {"success": False, "message": "User is already on the waitlist"}
+
+        # Add the user to the waitlist
+        db.execute(
+            """INSERT INTO waitlist (event_id, user_id)
+               VALUES (?, ?)""",
+            (event_id, user_id),
+        )
+        db.commit()
+        return {"success": True, "message": "Event is full. Added to the waitlist"}
+
+    @staticmethod
+    def notify_waitlist(event_id):
+        db = get_db()
+        waitlist_users = db.execute(
+            """SELECT w.id, w.user_id, r.email
+               FROM waitlist w
+               JOIN resident r ON w.user_id = r.resident_id
+               WHERE w.event_id = ? AND w.status = 'waiting'
+               ORDER BY w.added_at ASC
+               LIMIT 1""",
+            (event_id,),
+        ).fetchone()
+
+        if not waitlist_users:
+            return {"success": False, "message": "No users on the waitlist"}
+
+        # Simulate sending a notification
+        print(f"Notifying user {waitlist_users['email']} about an open spot in event {event_id}")
+
+        # Update waitlist status to 'notified'
+        db.execute(
+            """UPDATE waitlist
+               SET status = 'notified'
+               WHERE id = ?""",
+            (waitlist_users["id"],),
+        )
+        db.commit()
+        return {"success": True, "message": "User notified"}
+
+    @staticmethod
+    def confirm_waitlist(event_id, user_id):
+        db = get_db()
+        waitlist_entry = db.execute(
+            """SELECT * FROM waitlist
+               WHERE event_id = ? AND user_id = ? AND status = 'notified'""",
+            (event_id, user_id),
+        ).fetchone()
+
+        if not waitlist_entry:
+            return {"success": False, "message": "No notification found for this user"}
+
+        # Register the user
+        db.execute(
+            """INSERT INTO registrations (event_id, user_id)
+               VALUES (?, ?)""",
+            (event_id, user_id),
+        )
+        db.commit()
+
+        # Remove the user from the waitlist
+        db.execute(
+            """DELETE FROM waitlist
+               WHERE id = ?""",
+            (waitlist_entry["id"],),
+        )
+        db.commit()
+        return {"success": True, "message": "Waitlist spot confirmed and registered"}
+
+    @staticmethod
+    def event_notification():
+        db = get_db()
+        events = db.execute(
+            """SELECT e.id, e.activity_group_name, e.date, u.email
+            FROM event e
+            JOIN registrations r ON r.event_id = e.id 
+            JOIN users u ON r.user_id = u.id
+            WHERE e.date BETWEEN datetime('now') AND datetime('now', '+1 day')"""
+        ).fetchall()
+
+        for event in events:
+            print(f"Sending notification to {event['email']} for event {event['activity_group_name']}")
+
+
+    @staticmethod
+    def search_events(search_term, date, location):
+        db = get_db()
+        query = """SELECT e.id, e.activity_group_name, e.date, e.location_id
+                FROM event e
+                LEFT JOIN locations l on e.location_id = l.id
+                WHERE 1=1"""
+        params = []
+        if search_term:
+            query += " AND e.activity_group_name LIKE ?"
+            params.append(f"%{search_term}%")
+        if date:
+            query += " AND e.date = ?"
+            params.append(date)
+        if location:
+            query += " AND (l.address LIKE ? OR l.city LIKE ? OR l.state LIKE ? OR l.zip_code LIKE ?)"
+            params.extend([f"%{location}%", f"%{location}%", f"%{location}%", f"%{location}%"])
+        query += " ORDER BY e.date DESC"
+        return db.execute(query, params).fetchall()
+   
+    @staticmethod
+    def get_waitlist(user_id, event_id):
+        db = get_db()
+        waitlist = db.execute(
+            """SELECT w.id, w.event_id, w.user_id
+            FROM waitlist w
+            JOIN events e ON e.id = w.event_id
+            JOIN users u ON u.id = w.user_id
+            WHERE w.event_id = ? AND w.user_id = ?""",
+            (event_id, user_id)
+        ).fetchall()
+        return waitlist
