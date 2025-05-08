@@ -39,6 +39,10 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
+### Add Google Maps API Key (Optional)
+
+To see our embedded google maps iframe, you can create a Google Maps API key on google clouds services and add that to the .env file.
+
 ## Commands
 
 ```bash
