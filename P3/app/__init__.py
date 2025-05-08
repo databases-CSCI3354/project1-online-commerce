@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_login import LoginManager
 
-load_dotenv()
 from app.models.users import User
 from app.routes import init_app
 from app.routes.auth import auth_bp
@@ -18,6 +17,8 @@ from app.utils.database import check_db_health, close_db
 from app.utils.init_db import init_db
 from app.utils.logger import setup_logger
 
+load_dotenv()
+
 log = setup_logger(__name__)
 
 
@@ -27,7 +28,7 @@ def create_app():
     secret_key = secrets.token_hex(32)
     app.secret_key = secret_key
     app.config["DATABASE"] = os.path.abspath(os.path.join(os.path.dirname(__file__), "activity.db"))
-    log.info(f"Using database at: {app.config['DATABASE']}")
+    log.info("Using database at: %s", app.config["DATABASE"])
 
     # Disable template caching during testing
     app.config["TESTING"] = True
