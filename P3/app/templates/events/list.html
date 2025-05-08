@@ -12,6 +12,34 @@
         {% endif %}
     </div>
 
+    <form method="get" action="{{ url_for('events.list_events') }}" class="max-w-4xl mx-auto mb-8 flex flex-wrap items-center gap-2 bg-white shadow-md rounded-lg p-4">
+        <input
+          type="text"
+          name="search"
+          value="{{ request.args.get('search', '') }}"
+          placeholder="Search events…"
+          class="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <input
+          type="date"
+          name="start_date"
+          value="{{ request.args.get('start_date', '') }}"
+          class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <input
+          type="date"
+          name="end_date"
+          value="{{ request.args.get('end_date', '') }}"
+          class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <button
+          type="submit"
+          class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+        >
+          Search
+        </button>
+    </form>
+
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for event, location in event_locations %}
         <div class="bg-white rounded-lg shadow-md overflow-hidden">

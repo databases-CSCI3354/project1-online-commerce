@@ -18,7 +18,8 @@ CREATE TABLE resident (
     date_of_birth TEXT,
     profile_image TEXT,
     username TEXT UNIQUE,
-    hashed_password TEXT
+    hashed_password TEXT,
+    is_deleted INTEGER DEFAULT 0 -- Add this column
 );
 
 -- Table: activity_group

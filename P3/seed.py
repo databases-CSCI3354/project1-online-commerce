@@ -107,7 +107,22 @@ for i, (building, city, state, zip_code) in enumerate(boston_college_locations, 
         (i, building, city, state, zip_code)
     )
 
+# Insert multiple events
+c.execute("""
+INSERT OR IGNORE INTO event (event_id, activity_group_name, date, location_id, max_participants, cost, registration_required, registration_deadline)
+VALUES (1, 'Kpop Dance', '2025-06-01', 1, 50, 0, 1, '2025-05-25'),
+       (2, 'Boston Book Club', '2025-07-15', 2, 30, 10, 1, '2025-07-10'),
+       (3, 'Boston Runners', '2025-08-20', 3, 100, 0, 1, '2025-08-15');
+""")
+
+# Insert prerequisites
+c.execute("""
+INSERT OR IGNORE INTO prerequisite (event_id, prerequisite_event_id, minimum_performance, qualification_period, is_waiver_allowed)
+VALUES (2, 1, 80, 30, 1),
+       (3, 2, 90, 60, 0);
+""")
+
 conn.commit()
 conn.close()
 
-print('Seed data inserted!') 
+print('Seed data inserted!')

@@ -1,4 +1,5 @@
 from app.utils.database import get_db
+from app.utils.email import send_waitlist_notification
 
 
 class Event:
@@ -81,13 +82,10 @@ class Event:
     def get_all():
         db = get_db()
         events = db.execute(
-            """SELECT e.*, l.address, l.city, l.state, l.zip_code,
-                      COUNT(p.prerequisite_event_id) as prereq_count
+            """SELECT e.*, l.address, l.city, l.state, l.zip_code
                FROM event e
                LEFT JOIN location l ON e.location_id = l.location_id
-               LEFT JOIN prerequisite p ON e.event_id = p.event_id
-               GROUP BY e.event_id
-               ORDER BY e.date DESC"""
+               ORDER BY e.date ASC"""
         ).fetchall()
         return events
 
@@ -195,7 +193,7 @@ class Event:
     @staticmethod
     def notify_waitlist(event_id):
         db = get_db()
-        waitlist_users = db.execute(
+        waitlist_user = db.execute(
             """SELECT w.id, w.user_id, r.email
                FROM waitlist w
                JOIN resident r ON w.user_id = r.resident_id
@@ -205,21 +203,21 @@ class Event:
             (event_id,),
         ).fetchone()
 
-        if not waitlist_users:
+        if not waitlist_user:
             return {"success": False, "message": "No users on the waitlist"}
 
         # Simulate sending a notification
-        print(f"Notifying user {waitlist_users['email']} about an open spot in event {event_id}")
+        print(f"Notifying user {waitlist_user['email']} about an open spot in event {event_id}")
 
         # Update waitlist status to 'notified'
         db.execute(
             """UPDATE waitlist
                SET status = 'notified'
                WHERE id = ?""",
-            (waitlist_users["id"],),
+            (waitlist_user["id"],),
         )
         db.commit()
-        return {"success": True, "message": "User notified"}
+        return {"success": True, "message": "User notified", "email": waitlist_user["email"]}
 
     @staticmethod
     def confirm_waitlist(event_id, user_id):

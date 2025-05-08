@@ -4,17 +4,27 @@
 
 {% block header %}
   <h1 class="text-4xl font-extrabold text-center text-blue-800 mb-4">You can't spell Boston without activities</h1>
-  <form method="get" action="{{ url_for('main.index') }}" class="max-w-md mx-auto mb-8 flex">
+  <form method="get" action="{{ url_for('main.index') }}" class="max-w-4xl mx-auto mb-8 flex flex-wrap items-center gap-2 bg-white shadow-md rounded-lg p-4">
     <input
       type="text"
       name="category"
       value="{{ search_variable }}"
       placeholder="Search by name or category…"
-      class="flex-1 px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none"
+      class="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+    <input
+      type="date"
+      name="start_date"
+      class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+    <input
+      type="date"
+      name="end_date"
+      class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
     />
     <button
       type="submit"
-      class="bg-blue-600 text-white px-4 py-2 rounded-r-md hover:bg-blue-700 transition"
+      class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
     >
       Search
     </button>
