@@ -90,17 +90,6 @@ class Review:
         )
         db.commit()
 
-    def soft_delete(self):
-        """Mark the review as deleted instead of hard deleting."""
-        db = get_db()
-        db.execute(
-            """UPDATE review
-               SET is_deleted = 1
-               WHERE review_id = ?""",
-            (self.review_id,),
-        )
-        db.commit()
-
     def delete(self):
         """Hard delete the review from the database."""
         db = get_db()

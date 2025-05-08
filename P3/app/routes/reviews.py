@@ -104,6 +104,6 @@ def delete_review(review_id):
         flash("You can only delete your own reviews", "error")
         return redirect(url_for("reviews.list_reviews", name=review.activity_group_name))
 
-    review.soft_delete()  # Use soft_delete instead of delete
+    review.delete()  # Use hard delete instead of soft delete
     flash("Review deleted successfully!", "success")
     return redirect(url_for("reviews.list_reviews", name=review.activity_group_name))
