@@ -1,5 +1,7 @@
 import sqlite3
+
 from flask import current_app, g
+
 from app.utils.logger import setup_logger
 
 log = setup_logger(__name__)
@@ -27,17 +29,15 @@ def check_db_health():
     try:
         db = get_db()
         # Check if essential tables exist
-        tables = db.execute(
-            "SELECT name FROM sqlite_master WHERE type='table'"
-        ).fetchall()
-        required_tables = {'resident', 'activity_group', 'event', 'review'}
-        existing_tables = {table['name'] for table in tables}
-        
+        tables = db.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
+        required_tables = {"resident", "activity_group", "event", "review"}
+        existing_tables = {table["name"] for table in tables}
+
         missing_tables = required_tables - existing_tables
         if missing_tables:
             log.error(f"Missing required tables: {missing_tables}")
             return False
-            
+
         # Check if test user exists
         test_user = db.execute(
             "SELECT resident_id FROM resident WHERE username = 'testuser'"
@@ -45,7 +45,7 @@ def check_db_health():
         if not test_user:
             log.warning("Test user not found in database")
             return False
-            
+
         return True
     except Exception as e:
         log.error(f"Database health check failed: {str(e)}")

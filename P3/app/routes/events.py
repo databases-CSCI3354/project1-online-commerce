@@ -1,6 +1,6 @@
+
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import login_required
-import sys
 
 from app.models.activity_groups import ActivityGroup
 from app.models.events import Event
@@ -23,7 +23,7 @@ def list_events():
             max_participants=row["max_participants"],
             cost=row["cost"],
             registration_required=row["registration_required"],
-            registration_deadline=row["registration_deadline"]
+            registration_deadline=row["registration_deadline"],
         )
         location = None
         if event.location_id:
@@ -188,5 +188,6 @@ def manage_prerequisites(event_id):
 @events_bp.route("/events/<int:event_id>/notify_waitlist", methods=["POST"])
 def notify_waitlist(event_id):
     from flask import flash
+
     flash("Waitlist notification not implemented yet.", "info")
     return redirect(url_for("events.view_event", event_id=event_id))

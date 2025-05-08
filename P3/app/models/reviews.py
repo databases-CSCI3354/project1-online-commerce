@@ -52,9 +52,7 @@ class Review:
     @staticmethod
     def get(review_id):
         db = get_db()
-        review = db.execute(
-            """SELECT * FROM review WHERE review_id = ?""", (review_id,)
-        ).fetchone()
+        review = db.execute("""SELECT * FROM review WHERE review_id = ?""", (review_id,)).fetchone()
 
         if review is None:
             return None

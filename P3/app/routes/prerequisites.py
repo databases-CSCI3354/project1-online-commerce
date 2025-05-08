@@ -1,8 +1,8 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import login_required
 
-from app.models.prerequisite import Prerequisite
 from app.models.events import Event
+from app.models.prerequisite import Prerequisite
 
 prerequisites_bp = Blueprint("prerequisites", __name__)
 
@@ -25,7 +25,13 @@ def add_prerequisite():
     is_waiver_allowed = bool(request.form.get("is_waiver_allowed"))
 
     try:
-        Prerequisite.add_prerequisite(event_id, prerequisite_event_id, minimum_performance, qualification_period, is_waiver_allowed)
+        Prerequisite.add_prerequisite(
+            event_id,
+            prerequisite_event_id,
+            minimum_performance,
+            qualification_period,
+            is_waiver_allowed,
+        )
         flash("Prerequisite added successfully", "success")
     except Exception as e:
         flash(f"Error adding prerequisite: {str(e)}", "error")

@@ -2,7 +2,14 @@ from app.utils.database import get_db
 
 
 class Prerequisite:
-    def __init__(self, event_id, prerequisite_event_id, minimum_performance, qualification_period, is_waiver_allowed):
+    def __init__(
+        self,
+        event_id,
+        prerequisite_event_id,
+        minimum_performance,
+        qualification_period,
+        is_waiver_allowed,
+    ):
         self.event_id = event_id
         self.prerequisite_event_id = prerequisite_event_id
         self.minimum_performance = minimum_performance
@@ -10,14 +17,26 @@ class Prerequisite:
         self.is_waiver_allowed = is_waiver_allowed
 
     @staticmethod
-    def add_prerequisite(event_id, prerequisite_event_id, minimum_performance, qualification_period, is_waiver_allowed):
+    def add_prerequisite(
+        event_id,
+        prerequisite_event_id,
+        minimum_performance,
+        qualification_period,
+        is_waiver_allowed,
+    ):
         if event_id == prerequisite_event_id:
             raise ValueError("An event cannot be its own prerequisite.")
         db = get_db()
         db.execute(
             """INSERT INTO prerequisite (event_id, prerequisite_event_id, minimum_performance, qualification_period, is_waiver_allowed)
                VALUES (?, ?, ?, ?, ?)""",
-            (event_id, prerequisite_event_id, minimum_performance, qualification_period, is_waiver_allowed),
+            (
+                event_id,
+                prerequisite_event_id,
+                minimum_performance,
+                qualification_period,
+                is_waiver_allowed,
+            ),
         )
         db.commit()
 

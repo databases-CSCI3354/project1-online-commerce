@@ -1,8 +1,8 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import login_required
 
-from app.models.sessions import Session
 from app.models.events import Event
+from app.models.sessions import Session
 
 sessions_bp = Blueprint("sessions", __name__)
 

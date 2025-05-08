@@ -2,7 +2,6 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import login_required
 
 from app.models.member import Member
-from app.models.activity_groups import ActivityGroup
 
 members_bp = Blueprint("members", __name__)
 
@@ -11,7 +10,9 @@ members_bp = Blueprint("members", __name__)
 @login_required
 def list_members(activity_group_name):
     members = Member.get_members(activity_group_name)
-    return render_template("members/list.html", members=members, activity_group_name=activity_group_name)
+    return render_template(
+        "members/list.html", members=members, activity_group_name=activity_group_name
+    )
 
 
 @members_bp.route("/members/add", methods=["POST"])

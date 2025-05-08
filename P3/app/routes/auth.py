@@ -1,5 +1,4 @@
 import sqlite3
-import os
 
 from flask import Blueprint, current_app, flash, g, redirect, render_template, request, url_for
 from flask_bcrypt import Bcrypt
@@ -9,6 +8,7 @@ from app.models.users import User
 
 auth_bp = Blueprint("auth", __name__)
 bcrypt = Bcrypt()
+
 
 def get_db():
     if "db" not in g:
@@ -50,7 +50,9 @@ def register():
         db = get_db()
         try:
             # Check if customer exists
-            resident = db.execute("SELECT resident_id FROM resident WHERE resident_id = ?", [resident_id]).fetchone()
+            resident = db.execute(
+                "SELECT resident_id FROM resident WHERE resident_id = ?", [resident_id]
+            ).fetchone()
 
             if not resident:
                 flash("Invalid Resident ID", "error")

@@ -1,5 +1,4 @@
 from app.utils.database import get_db
-from app.utils.email import send_waitlist_notification
 
 
 class Event:
@@ -143,7 +142,7 @@ class Event:
         db = get_db()
         db.execute("DELETE FROM event WHERE event_id = ?", (self.id,))
         db.commit()
-    
+
     @staticmethod
     def event_registration(event_id, user_id):
         db = get_db()
@@ -151,7 +150,7 @@ class Event:
             """SELECT max_participants, 
                       (SELECT count(*) FROM registrations WHERE event_id = ?) AS current_participants
                FROM events WHERE id = ?""",
-            (event_id, event_id)
+            (event_id, event_id),
         ).fetchone()
 
         if not event:
@@ -260,8 +259,9 @@ class Event:
         ).fetchall()
 
         for event in events:
-            print(f"Sending notification to {event['email']} for event {event['activity_group_name']}")
-
+            print(
+                f"Sending notification to {event['email']} for event {event['activity_group_name']}"
+            )
 
     @staticmethod
     def search_events(search_term, date, location):
@@ -278,11 +278,13 @@ class Event:
             query += " AND e.date = ?"
             params.append(date)
         if location:
-            query += " AND (l.address LIKE ? OR l.city LIKE ? OR l.state LIKE ? OR l.zip_code LIKE ?)"
+            query += (
+                " AND (l.address LIKE ? OR l.city LIKE ? OR l.state LIKE ? OR l.zip_code LIKE ?)"
+            )
             params.extend([f"%{location}%", f"%{location}%", f"%{location}%", f"%{location}%"])
         query += " ORDER BY e.date DESC"
         return db.execute(query, params).fetchall()
-   
+
     @staticmethod
     def get_waitlist(user_id, event_id):
         db = get_db()
@@ -292,6 +294,6 @@ class Event:
             JOIN events e ON e.id = w.event_id
             JOIN users u ON u.id = w.user_id
             WHERE w.event_id = ? AND w.user_id = ?""",
-            (event_id, user_id)
+            (event_id, user_id),
         ).fetchall()
         return waitlist
