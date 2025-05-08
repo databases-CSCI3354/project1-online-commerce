@@ -101,6 +101,12 @@ class Review:
         )
         db.commit()
 
+    def delete(self):
+        """Hard delete the review from the database."""
+        db = get_db()
+        db.execute("DELETE FROM review WHERE review_id = ?", (self.review_id,))
+        db.commit()
+
     @staticmethod
     def get_by_activity_group(activity_group_name, page=1, per_page=10):
         """Fetch reviews for an activity group with pagination."""

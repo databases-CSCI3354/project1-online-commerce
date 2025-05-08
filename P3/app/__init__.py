@@ -10,6 +10,8 @@ from app.routes.auth import auth_bp
 from app.routes.events import events_bp
 from app.routes.reviews import reviews_bp
 from app.routes.sessions import sessions_bp
+from app.routes.members import members_bp
+from app.routes.prerequisites import prerequisites_bp
 from app.utils.database import close_db, check_db_health
 from app.utils.init_db import init_db
 from app.utils.logger import setup_logger
@@ -53,5 +55,7 @@ def create_app():
     app.register_blueprint(events_bp)
     app.register_blueprint(reviews_bp)
     app.register_blueprint(sessions_bp, url_prefix="/sessions")
+    app.register_blueprint(members_bp, url_prefix="/members")
+    app.register_blueprint(prerequisites_bp, url_prefix="/prerequisites")
 
     return app

@@ -94,7 +94,7 @@ def edit_review(review_id):
 @reviews_bp.route("/review/<int:review_id>/delete", methods=["POST"])
 @login_required
 def delete_review(review_id):
-    """Delete a review."""
+    """Soft delete a review."""
     review = Review.get(review_id)
     if not review:
         flash("Review not found", "error")
@@ -104,6 +104,6 @@ def delete_review(review_id):
         flash("You can only delete your own reviews", "error")
         return redirect(url_for("reviews.list_reviews", name=review.activity_group_name))
 
-    review.delete()
+    review.soft_delete()  # Use soft_delete instead of delete
     flash("Review deleted successfully!", "success")
-    return redirect(url_for("reviews.list_reviews", name=review.activity_group_name)) 
+    return redirect(url_for("reviews.list_reviews", name=review.activity_group_name))
