@@ -91,7 +91,7 @@ def delete_session(session_id):
         flash("Session not found", "error")
     else:
         try:
-            session.delete()
+            session.delete()  # Use the newly added delete method
             flash("Session deleted successfully", "success")
         except Exception as e:
             flash(f"Error deleting session: {str(e)}", "error")

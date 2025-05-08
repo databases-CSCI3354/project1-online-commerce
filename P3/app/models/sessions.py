@@ -92,6 +92,12 @@ class Session:
         )
         db.commit()
 
+    def delete(self):
+        """Hard delete the session from the database."""
+        db = get_db()
+        db.execute("DELETE FROM session WHERE id = ?", (self.id,))
+        db.commit()
+
     def soft_delete(self):
         """Mark the session as deleted instead of hard deleting."""
         db = get_db()
