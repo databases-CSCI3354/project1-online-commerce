@@ -19,8 +19,8 @@
                 <h2 class="text-xl font-semibold mb-2">{{ event.activity_group_name }}</h2>
                 <div class="text-gray-600 mb-4">
                     <p><strong>Date:</strong> {{ event.date }}</p>
-                    {% if event.location_id %}
-                    <p><strong>Location:</strong> {{ event.address }}, {{ event.city }}, {{ event.state }} {{ event.zip_code }}</p>
+                    {% if location and location.address %}
+                    <p><strong>Location:</strong> {{ location.address }}, {{ location.city }}, {{ location.state }} {{ location.zip_code }}</p>
                     <iframe width="100%" height="200" frameborder="0" style="border:0"
                         src="{{ location.get_google_maps_embed_url() }}" allowfullscreen>
                     </iframe>
