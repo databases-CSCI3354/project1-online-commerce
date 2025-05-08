@@ -124,7 +124,7 @@ tests/
 
 ## Presentation Materials
 
-The full project slide deck is available in the `/presentation` folder of the repo. It includes:
+The full project slide deck is available in the repo as a pdf file. It includes:
 - Problem background
 - E-R diagram
 - Schema breakdown
