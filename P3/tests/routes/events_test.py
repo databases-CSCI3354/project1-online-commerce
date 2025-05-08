@@ -1,5 +1,6 @@
 from unittest.mock import MagicMock
 
+
 def test_notify_waitlist_success(monkeypatch, client, login_user):
     mock_event = MagicMock()
     mock_event.notify_waitlist.return_value = {"success": True, "message": "User notified"}
@@ -12,7 +13,10 @@ def test_notify_waitlist_success(monkeypatch, client, login_user):
 
 def test_notify_waitlist_failure(monkeypatch, client, login_user):
     mock_event = MagicMock()
-    mock_event.notify_waitlist.return_value = {"success": False, "message": "No users on the waitlist"}
+    mock_event.notify_waitlist.return_value = {
+        "success": False,
+        "message": "No users on the waitlist",
+    }
     monkeypatch.setattr("app.models.events.Event", mock_event)
 
     response = client.post("/events/1/notify_waitlist")
@@ -22,7 +26,10 @@ def test_notify_waitlist_failure(monkeypatch, client, login_user):
 
 def test_confirm_waitlist_success(monkeypatch, client, login_user):
     mock_event = MagicMock()
-    mock_event.confirm_waitlist.return_value = {"success": True, "message": "Waitlist spot confirmed and registered"}
+    mock_event.confirm_waitlist.return_value = {
+        "success": True,
+        "message": "Waitlist spot confirmed and registered",
+    }
     monkeypatch.setattr("app.models.events.Event", mock_event)
 
     response = client.post("/events/1/confirm_waitlist", data={"user_id": 2})
@@ -32,7 +39,10 @@ def test_confirm_waitlist_success(monkeypatch, client, login_user):
 
 def test_confirm_waitlist_failure(monkeypatch, client, login_user):
     mock_event = MagicMock()
-    mock_event.confirm_waitlist.return_value = {"success": False, "message": "No notification found for this user"}
+    mock_event.confirm_waitlist.return_value = {
+        "success": False,
+        "message": "No notification found for this user",
+    }
     monkeypatch.setattr("app.models.events.Event", mock_event)
 
     response = client.post("/events/1/confirm_waitlist", data={"user_id": 2})

@@ -1,9 +1,19 @@
 from app.utils.database import get_db
 
+
 class Resident:
-    def __init__(self, resident_id, name, email, phone_number=None,
-                 interests=None, date_of_birth=None, profile_image=None,
-                 username=None, hashed_password=None):
+    def __init__(
+        self,
+        resident_id,
+        name,
+        email,
+        phone_number=None,
+        interests=None,
+        date_of_birth=None,
+        profile_image=None,
+        username=None,
+        hashed_password=None,
+    ):
         self.resident_id = resident_id
         self.name = name
         self.email = email
@@ -15,9 +25,16 @@ class Resident:
         self.hashed_password = hashed_password
 
     @staticmethod
-    def create(name, email, phone_number=None, interests=None,
-               date_of_birth=None, profile_image=None,
-               username=None, hashed_password=None):
+    def create(
+        name,
+        email,
+        phone_number=None,
+        interests=None,
+        date_of_birth=None,
+        profile_image=None,
+        username=None,
+        hashed_password=None,
+    ):
         if not name or not email:
             raise ValueError("Name and email are required")
         db = get_db()
@@ -27,8 +44,16 @@ class Resident:
                (name, email, phone_number, interests, date_of_birth,
                 profile_image, username, hashed_password, is_deleted)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)""",
-            (name, email, phone_number, interests, date_of_birth,
-             profile_image, username, hashed_password),
+            (
+                name,
+                email,
+                phone_number,
+                interests,
+                date_of_birth,
+                profile_image,
+                username,
+                hashed_password,
+            ),
         )
         db.commit()
         return cursor.lastrowid
@@ -72,9 +97,17 @@ class Resident:
                name = ?, email = ?, phone_number = ?, interests = ?,
                date_of_birth = ?, profile_image = ?, username = ?, hashed_password = ?
                WHERE resident_id = ?""",
-            (self.name, self.email, self.phone_number, self.interests,
-             self.date_of_birth, self.profile_image, self.username,
-             self.hashed_password, self.resident_id),
+            (
+                self.name,
+                self.email,
+                self.phone_number,
+                self.interests,
+                self.date_of_birth,
+                self.profile_image,
+                self.username,
+                self.hashed_password,
+                self.resident_id,
+            ),
         )
         db.commit()
 
@@ -82,4 +115,3 @@ class Resident:
         db = get_db()
         db.execute("DELETE FROM resident WHERE resident_id = ?", (self.resident_id,))
         db.commit()
-

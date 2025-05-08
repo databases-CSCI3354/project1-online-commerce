@@ -1,5 +1,6 @@
-from app.utils.database import get_db
 import os
+
+from app.utils.database import get_db
 
 
 class Location:
@@ -25,7 +26,9 @@ class Location:
     @staticmethod
     def get(location_id):
         db = get_db()
-        location = db.execute("""SELECT * FROM location WHERE location_id = ?""", (location_id,)).fetchone()
+        location = db.execute(
+            """SELECT * FROM location WHERE location_id = ?""", (location_id,)
+        ).fetchone()
 
         if location is None:
             return None
@@ -42,13 +45,16 @@ class Location:
     def get_all():
         db = get_db()
         rows = db.execute("""SELECT * FROM location ORDER BY city, state""").fetchall()
-        return [Location(
-            location_id=row["location_id"],
-            address=row["address"],
-            city=row["city"],
-            state=row["state"],
-            zip_code=row["zip_code"]
-        ) for row in rows]
+        return [
+            Location(
+                location_id=row["location_id"],
+                address=row["address"],
+                city=row["city"],
+                state=row["state"],
+                zip_code=row["zip_code"],
+            )
+            for row in rows
+        ]
 
     def update(self):
         db = get_db()
@@ -86,4 +92,6 @@ class Location:
         """Generate a Google Maps embed URL for the location."""
         query = f"{self.address}, {self.city}, {self.state}, {self.zip_code}"
         api_key = os.environ.get("GOOGLE_MAPS_API_KEY", "YOUR_GOOGLE_MAPS_API_KEY")
-        return f"https://www.google.com/maps/embed/v1/place?key={api_key}&q={query.replace(' ', '+')}"
+        return (
+            f"https://www.google.com/maps/embed/v1/place?key={api_key}&q={query.replace(' ', '+')}"
+        )

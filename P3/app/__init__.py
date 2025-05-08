@@ -1,23 +1,25 @@
 import os
 import secrets
 
+from dotenv import load_dotenv
 from flask import Flask
 from flask_login import LoginManager
-from dotenv import load_dotenv
+
 load_dotenv()
 from app.models.users import User
 from app.routes import init_app
 from app.routes.auth import auth_bp
 from app.routes.events import events_bp
-from app.routes.reviews import reviews_bp
-from app.routes.sessions import sessions_bp
 from app.routes.members import members_bp
 from app.routes.prerequisites import prerequisites_bp
-from app.utils.database import close_db, check_db_health
+from app.routes.reviews import reviews_bp
+from app.routes.sessions import sessions_bp
+from app.utils.database import check_db_health, close_db
 from app.utils.init_db import init_db
 from app.utils.logger import setup_logger
 
 log = setup_logger(__name__)
+
 
 def create_app():
     # create and configure the app
@@ -39,7 +41,7 @@ def create_app():
             if not check_db_health():
                 log.error("Database health check failed after reinitialization")
                 raise RuntimeError("Failed to initialize database properly")
-        
+
     app.teardown_appcontext(close_db)
     init_app(app=app)
 

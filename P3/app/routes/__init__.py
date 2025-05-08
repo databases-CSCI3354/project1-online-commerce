@@ -1,8 +1,8 @@
 from flask import Flask
 
+from app.routes.locations import locations_bp
 from app.routes.main import main_bp
 from app.routes.status import status_bp
-from app.routes.locations import locations_bp
 
 
 def init_app(app: Flask):
