@@ -1,8 +1,5 @@
 # Databases Project 3 - Connecting Boston: Local Activity Group Web App
 
-Course: Databases
-Professor Aviram
-
 ## Overview
 
 This project delivers a lightweight, real-world web application that helps Boston residents find and participate in local activity groups. It solves the problem of scattered or inaccessible group listings by offering a centralized, intuitive platform where users can join activities, register for events, and leave feedback.
