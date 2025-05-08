@@ -77,6 +77,36 @@ INSERT OR IGNORE INTO activity_group (name, category, description, founding_date
 VALUES ('Boston Coders', 'Technology', 'A group for coding enthusiasts', '2017-11-05', 'http://bostoncoders.com', 'code@example.com', '555-6789', '{"github": "bostoncoders"}', 1, 50, 'weekly', 0, 1, 16)
 """)
 
+# Insert Boston College locations
+boston_college_locations = [
+    ("Gasson Hall", "Chestnut Hill", "MA", "02467"),
+    ("Devlin Hall", "Chestnut Hill", "MA", "02467"),
+    ("Bapst Library", "Chestnut Hill", "MA", "02467"),
+    ("St. Mary's Hall", "Chestnut Hill", "MA", "02467"),
+    ("Roberts Center", "Chestnut Hill", "MA", "02467"),
+    ("McElroy Commons", "Chestnut Hill", "MA", "02467"),
+    ("Carney Hall", "Chestnut Hill", "MA", "02467"),
+    ("McGuinn Hall", "Chestnut Hill", "MA", "02467"),
+    ("Higgins Hall", "Chestnut Hill", "MA", "02467"),
+    ("Fulton Hall", "Chestnut Hill", "MA", "02467"),
+    ("Thomas More Apartments", "Chestnut Hill", "MA", "02467"),
+    ("Gabelli Hall", "Chestnut Hill", "MA", "02467"),
+    ("Vanderslice Hall", "Chestnut Hill", "MA", "02467"),
+    ("Stayer Hall", "Chestnut Hill", "MA", "02467"),
+    ("Walsh Hall", "Chestnut Hill", "MA", "02467"),
+    ("Fenwick Hall", "Chestnut Hill", "MA", "02467"),
+    ("Claver Hall", "Chestnut Hill", "MA", "02467"),
+    ("Cheverus Hall", "Chestnut Hill", "MA", "02467"),
+    ("Gonzaga Hall", "Chestnut Hill", "MA", "02467")
+]
+
+for i, (building, city, state, zip_code) in enumerate(boston_college_locations, start=2):
+    c.execute(
+        """INSERT OR IGNORE INTO location (location_id, address, city, state, zip_code)
+        VALUES (?, ?, ?, ?, ?)""",
+        (i, building, city, state, zip_code)
+    )
+
 conn.commit()
 conn.close()
 

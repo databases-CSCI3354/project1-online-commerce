@@ -183,3 +183,10 @@ def manage_prerequisites(event_id):
         prerequisites=prerequisites,
         other_events=other_events,
     )
+
+
+@events_bp.route("/events/<int:event_id>/notify_waitlist", methods=["POST"])
+def notify_waitlist(event_id):
+    from flask import flash
+    flash("Waitlist notification not implemented yet.", "info")
+    return redirect(url_for("events.view_event", event_id=event_id))
