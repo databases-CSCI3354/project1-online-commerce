@@ -14,7 +14,7 @@ class Location:
         db = get_db()
         cursor = db.cursor()
         cursor.execute(
-            """INSERT INTO locations (address, city, state, zip_code)
+            """INSERT INTO location (address, city, state, zip_code)
                VALUES (?, ?, ?, ?)""",
             (address, city, state, zip_code),
         )
@@ -24,7 +24,7 @@ class Location:
     @staticmethod
     def get(location_id):
         db = get_db()
-        location = db.execute("""SELECT * FROM locations WHERE id = ?""", (location_id,)).fetchone()
+        location = db.execute("""SELECT * FROM location WHERE id = ?""", (location_id,)).fetchone()
 
         if location is None:
             return None
@@ -40,13 +40,13 @@ class Location:
     @staticmethod
     def get_all():
         db = get_db()
-        locations = db.execute("""SELECT * FROM locations ORDER BY city, state""").fetchall()
+        locations = db.execute("""SELECT * FROM location ORDER BY city, state""").fetchall()
         return locations
 
     def update(self):
         db = get_db()
         db.execute(
-            """UPDATE locations
+            """UPDATE location
                SET address = ?,
                    city = ?,
                    state = ?,
@@ -58,7 +58,7 @@ class Location:
 
     def delete(self):
         db = get_db()
-        db.execute("DELETE FROM locations WHERE id = ?", (self.id,))
+        db.execute("DELETE FROM location WHERE id = ?", (self.id,))
         db.commit()
 
     @staticmethod
@@ -66,7 +66,7 @@ class Location:
         db = get_db()
         search_term = f"%{query}%"
         locations = db.execute(
-            """SELECT * FROM locations 
+            """SELECT * FROM location 
                WHERE address LIKE ? 
                OR city LIKE ? 
                OR state LIKE ?

@@ -22,6 +22,10 @@ class Event:
         self.registration_required = registration_required
         self.registration_deadline = registration_deadline
 
+    @property
+    def event_id(self):
+        return self.id
+
     @staticmethod
     def create(
         activity_group_name,
