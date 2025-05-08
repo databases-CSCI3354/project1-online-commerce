@@ -1,105 +1,258 @@
 from app.utils.database import get_db
+from datetime import datetime
 
 
 class Event:
-    def __init__(
-        self,
-        id,
-        activity_group_name,
-        date,
-        location_id,
-        max_participants,
-        cost,
-        registration_required,
-        registration_deadline,
-    ):
+    def __init__(self, id, activity_group_name, date, max_participants=None,
+                 cost=0, registration_required=False, registration_deadline=None,
+                 created_by=None):
         self.id = id
         self.activity_group_name = activity_group_name
         self.date = date
-        self.location_id = location_id
         self.max_participants = max_participants
         self.cost = cost
         self.registration_required = registration_required
         self.registration_deadline = registration_deadline
+        self.created_by = created_by
 
     @property
     def event_id(self):
         return self.id
 
     @staticmethod
-    def create(
-        activity_group_name,
-        date,
-        location_id,
-        max_participants,
-        cost,
-        registration_required,
-        registration_deadline,
-    ):
-        if max_participants < 0 or cost < 0:
-            raise ValueError("Max participants and cost must be non-negative")
+    def create(activity_group_name, date, max_participants=None, cost=0,
+               registration_required=False, registration_deadline=None,
+               location_id=None, created_by=None):
+        """Create a new event."""
         db = get_db()
-        cursor = db.cursor()
-        cursor.execute(
-            """INSERT INTO event (activity_group_name, date, location_id, 
-                                max_participants, cost, registration_required, 
-                                registration_deadline)
-               VALUES (?, ?, ?, ?, ?, ?, ?)""",
-            (
-                activity_group_name,
-                date,
-                location_id,
-                max_participants,
-                cost,
-                registration_required,
-                registration_deadline,
-            ),
+        db.execute(
+            """
+            INSERT INTO event (
+                activity_group_name, date, max_participants, cost,
+                registration_required, registration_deadline,
+                location_id, created_by
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (activity_group_name, date, max_participants, cost,
+             registration_required, registration_deadline,
+             location_id, created_by)
         )
         db.commit()
-        return cursor.lastrowid
 
     @staticmethod
     def get(event_id):
+        """Get an event by ID."""
         db = get_db()
-        event = db.execute("""SELECT * FROM event WHERE event_id = ?""", (event_id,)).fetchone()
+        event = db.execute(
+            """
+            SELECT e.*, l.address, l.city, l.state, l.zip_code
+            FROM event e
+            LEFT JOIN location l ON e.location_id = l.id
+            WHERE e.id = ?
+            """,
+            (event_id,)
+        ).fetchone()
+        
+        return dict(event) if event else None
 
-        if event is None:
-            return None
+    @staticmethod
+    def get_all(search_query=None, exclude_event_id=None):
+        """Get all events, optionally filtered by search query."""
+        db = get_db()
+        query = """
+            SELECT e.*, l.address, l.city, l.state, l.zip_code
+            FROM event e
+            LEFT JOIN location l ON e.location_id = l.id
+            WHERE 1=1
+        """
+        params = []
+        
+        if search_query:
+            query += """
+                AND (
+                    e.activity_group_name LIKE ?
+                    OR l.address LIKE ?
+                    OR l.city LIKE ?
+                )
+            """
+            search_term = f"%{search_query}%"
+            params.extend([search_term, search_term, search_term])
+        
+        if exclude_event_id:
+            query += " AND e.id != ?"
+            params.append(exclude_event_id)
+        
+        query += " ORDER BY e.date DESC"
+        
+        events = db.execute(query, params).fetchall()
+        return [dict(event) for event in events]
 
-        return Event(
-            id=event["event_id"],
-            activity_group_name=event["activity_group_name"],
-            date=event["date"],
-            location_id=event["location_id"],
-            max_participants=event["max_participants"],
-            cost=event["cost"],
-            registration_required=event["registration_required"],
-            registration_deadline=event["registration_deadline"],
+    @staticmethod
+    def update(event_id, **kwargs):
+        """Update an event's details."""
+        db = get_db()
+        allowed_fields = {
+            'activity_group_name', 'date', 'max_participants', 'cost',
+            'registration_required', 'registration_deadline', 'location_id'
+        }
+        
+        updates = {k: v for k, v in kwargs.items() if k in allowed_fields}
+        if not updates:
+            return
+        
+        set_clause = ', '.join(f"{k} = ?" for k in updates.keys())
+        query = f"UPDATE event SET {set_clause} WHERE id = ?"
+        
+        db.execute(query, list(updates.values()) + [event_id])
+        db.commit()
+
+    @staticmethod
+    def delete(event_id):
+        """Delete an event and its related records."""
+        db = get_db()
+        # Delete prerequisites
+        db.execute("DELETE FROM prerequisite WHERE event_id = ?", (event_id,))
+        db.execute("DELETE FROM prerequisite WHERE prerequisite_event_id = ?", (event_id,))
+        
+        # Delete registrations and waitlist
+        db.execute("DELETE FROM registrations WHERE event_id = ?", (event_id,))
+        db.execute("DELETE FROM waitlist WHERE event_id = ?", (event_id,))
+        
+        # Delete sessions
+        db.execute("DELETE FROM session WHERE event_id = ?", (event_id,))
+        
+        # Delete the event
+        db.execute("DELETE FROM event WHERE id = ?", (event_id,))
+        db.commit()
+
+    @staticmethod
+    def get_registered_users(event_id):
+        """Get all users registered for an event."""
+        db = get_db()
+        users = db.execute(
+            """
+            SELECT r.*, u.username, u.email
+            FROM registrations r
+            JOIN resident u ON r.user_id = u.id
+            WHERE r.event_id = ? AND r.status = 'registered'
+            """,
+            (event_id,)
+        ).fetchall()
+        
+        return [dict(user) for user in users]
+
+    @staticmethod
+    def get_waitlisted_users(event_id):
+        """Get all users on the waitlist for an event."""
+        db = get_db()
+        users = db.execute(
+            """
+            SELECT w.*, u.username, u.email
+            FROM waitlist w
+            JOIN resident u ON w.user_id = u.id
+            WHERE w.event_id = ?
+            ORDER BY w.created_at ASC
+            """,
+            (event_id,)
+        ).fetchall()
+        
+        return [dict(user) for user in users]
+
+    @staticmethod
+    def register_user(event_id, user_id):
+        """Register a user for an event."""
+        db = get_db()
+        event = Event.get(event_id)
+        if not event:
+            raise ValueError("Event not found")
+        
+        # Check if user is already registered
+        existing = db.execute(
+            "SELECT * FROM registrations WHERE event_id = ? AND user_id = ?",
+            (event_id, user_id)
+        ).fetchone()
+        
+        if existing:
+            raise ValueError("User is already registered for this event")
+        
+        # Check if event is full
+        if event['max_participants']:
+            registered_count = db.execute(
+                """
+                SELECT COUNT(*) as count
+                FROM registrations
+                WHERE event_id = ? AND status = 'registered'
+                """,
+                (event_id,)
+            ).fetchone()['count']
+            
+            if registered_count >= event['max_participants']:
+                # Add to waitlist
+                db.execute(
+                    """
+                    INSERT INTO waitlist (event_id, user_id)
+                    VALUES (?, ?)
+                    """,
+                    (event_id, user_id)
+                )
+                db.commit()
+                return False  # Added to waitlist
+        
+        # Register user
+        db.execute(
+            """
+            INSERT INTO registrations (event_id, user_id, status)
+            VALUES (?, ?, 'registered')
+            """,
+            (event_id, user_id)
         )
+        db.commit()
+        return True  # Successfully registered
 
     @staticmethod
-    def get_all():
+    def cancel_registration(event_id, user_id):
+        """Cancel a user's registration for an event."""
         db = get_db()
-        events = db.execute(
-            """SELECT e.*, l.address, l.city, l.state, l.zip_code
-               FROM event e
-               LEFT JOIN location l ON e.location_id = l.location_id
-               ORDER BY e.date ASC"""
-        ).fetchall()
-        return events
-
-    @staticmethod
-    def get_by_activity_group(activity_group_name):
-        db = get_db()
-        events = db.execute(
-            """SELECT e.*, l.address, l.city, l.state, l.zip_code
-               FROM event e
-               LEFT JOIN location l ON e.location_id = l.location_id
-               WHERE e.activity_group_name = ?
-               ORDER BY e.date DESC""",
-            (activity_group_name,),
-        ).fetchall()
-        return events
+        # Remove registration
+        db.execute(
+            """
+            DELETE FROM registrations
+            WHERE event_id = ? AND user_id = ?
+            """,
+            (event_id, user_id)
+        )
+        
+        # Check if there are waitlisted users
+        waitlisted = db.execute(
+            """
+            SELECT * FROM waitlist
+            WHERE event_id = ?
+            ORDER BY created_at ASC
+            LIMIT 1
+            """,
+            (event_id,)
+        ).fetchone()
+        
+        if waitlisted:
+            # Register the first waitlisted user
+            db.execute(
+                """
+                INSERT INTO registrations (event_id, user_id, status)
+                VALUES (?, ?, 'registered')
+                """,
+                (event_id, waitlisted['user_id'])
+            )
+            
+            # Remove from waitlist
+            db.execute(
+                """
+                DELETE FROM waitlist
+                WHERE event_id = ? AND user_id = ?
+                """,
+                (event_id, waitlisted['user_id'])
+            )
+        
+        db.commit()
 
     @staticmethod
     def get_prerequisites(event_id):
@@ -114,15 +267,13 @@ class Event:
         return prerequisites
 
     def update(self):
+        if self.max_participants < 0 or self.cost < 0:
+            raise ValueError("Max participants and cost must be non-negative")
         db = get_db()
         db.execute(
             """UPDATE event
-               SET activity_group_name = ?,
-                   date = ?,
-                   location_id = ?,
-                   max_participants = ?,
-                   cost = ?,
-                   registration_required = ?,
+               SET activity_group_name = ?, date = ?, location_id = ?,
+                   max_participants = ?, cost = ?, registration_required = ?,
                    registration_deadline = ?
                WHERE event_id = ?""",
             (
@@ -140,6 +291,10 @@ class Event:
 
     def delete(self):
         db = get_db()
+        # First delete all prerequisites
+        db.execute("DELETE FROM prerequisite WHERE event_id = ?", (self.id,))
+        db.execute("DELETE FROM prerequisite WHERE prerequisite_event_id = ?", (self.id,))
+        # Then delete the event
         db.execute("DELETE FROM event WHERE event_id = ?", (self.id,))
         db.commit()
 

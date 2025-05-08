@@ -7,13 +7,7 @@ from flask_login import LoginManager
 
 from app.models.users import User
 from app.routes import init_app
-from app.routes.auth import auth_bp
-from app.routes.events import events_bp
-from app.routes.members import members_bp
-from app.routes.prerequisites import prerequisites_bp
-from app.routes.reviews import reviews_bp
-from app.routes.sessions import sessions_bp
-from app.utils.database import check_db_health, close_db
+from app.utils.database import check_db_health, close_db, init_db, get_db
 from app.utils.init_db import init_db
 from app.utils.logger import setup_logger
 
@@ -22,44 +16,59 @@ load_dotenv()
 log = setup_logger(__name__)
 
 
-def create_app():
+def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
     secret_key = secrets.token_hex(32)
     app.secret_key = secret_key
-    app.config["DATABASE"] = os.path.abspath(os.path.join(os.path.dirname(__file__), "activity.db"))
-    log.info("Using database at: %s", app.config["DATABASE"])
+    app.config.from_mapping(
+        SECRET_KEY='dev',
+        DATABASE=os.path.join(app.instance_path, 'activity.sqlite'),
+    )
 
-    # Disable template caching during testing
-    app.config["TESTING"] = True
+    if test_config is None:
+        app.config.from_pyfile('config.py', silent=True)
+    else:
+        app.config.from_mapping(test_config)
 
-    # Initialize database tables
-    with app.app_context():
-        init_db(app)
-        if not check_db_health():
-            log.warning("Database health check failed - reinitializing database")
-            init_db(app)
-            if not check_db_health():
-                log.error("Database health check failed after reinitialization")
-                raise RuntimeError("Failed to initialize database properly")
+    try:
+        os.makedirs(app.instance_path)
+    except OSError:
+        pass
 
-    app.teardown_appcontext(close_db)
-    init_app(app=app)
+    # Initialize database
+    init_db(app)
 
-    # Initialize Flask-Login
+    # Initialize login manager
     login_manager = LoginManager()
     login_manager.init_app(app)
-    login_manager.login_view = "auth.login"  # Set the login view for @login_required
+    login_manager.login_view = 'auth.login'
 
     @login_manager.user_loader
     def load_user(user_id):
         return User.get(user_id)
 
-    app.register_blueprint(auth_bp)
-    app.register_blueprint(events_bp)
-    app.register_blueprint(reviews_bp)
-    app.register_blueprint(sessions_bp, url_prefix="/sessions")
-    app.register_blueprint(members_bp, url_prefix="/members")
-    app.register_blueprint(prerequisites_bp, url_prefix="/prerequisites")
+    # Create admin user if it doesn't exist
+    with app.app_context():
+        db = get_db()
+        admin = db.execute(
+            "SELECT * FROM resident WHERE role = 'admin'"
+        ).fetchone()
+        
+        if not admin:
+            from werkzeug.security import generate_password_hash
+            db.execute(
+                """
+                INSERT INTO resident (username, email, password_hash, role)
+                VALUES (?, ?, ?, ?)
+                """,
+                ('admin', 'admin@example.com', generate_password_hash('admin'), 'admin')
+            )
+            db.commit()
+
+    app.teardown_appcontext(close_db)
+    
+    # Register all blueprints
+    init_app(app=app)
 
     return app

@@ -1,6 +1,7 @@
 import sqlite3
-
+import click
 from flask import current_app, g
+from flask.cli import with_appcontext
 
 from app.utils.logger import setup_logger
 
@@ -50,3 +51,18 @@ def check_db_health():
     except Exception as e:
         log.error(f"Database health check failed: {str(e)}")
         return False
+
+
+def init_db(app):
+    with app.app_context():
+        db = get_db()
+        with current_app.open_resource('utils/schema.sql') as f:
+            db.executescript(f.read().decode('utf8'))
+
+
+@click.command('init-db')
+@with_appcontext
+def init_db_command():
+    """Clear the existing data and create new tables."""
+    init_db(current_app)
+    click.echo('Initialized the database.')

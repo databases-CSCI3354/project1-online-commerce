@@ -25,6 +25,9 @@
             <svg class="w-6 h-6 text-yellow-300" fill="currentColor" viewBox="0 0 20 20"><path d="M10 10a4 4 0 100-8 4 4 0 000 8zm0 2c-4.418 0-8 2.239-8 5v1a1 1 0 001 1h14a1 1 0 001-1v-1c0-2.761-3.582-5-8-5z"/></svg>
             Welcome, <span class="font-semibold">{{ current_user.username }}</span>
           </span>
+          {% if current_user.is_admin %}
+          <a href="{{ url_for('events.create_event') }}" class="ml-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-semibold transition">+ Create Event</a>
+          {% endif %}
           <a href="{{ url_for('auth.logout') }}" class="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white px-4 py-2 rounded-lg shadow transition font-semibold">Logout</a>
         </li>
       {% else %}

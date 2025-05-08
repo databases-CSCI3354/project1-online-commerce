@@ -100,7 +100,7 @@ class Review:
         db = get_db()
         offset = (page - 1) * per_page
         reviews = db.execute(
-            """SELECT r.*, u.name as resident_name
+            """SELECT r.*, u.username as resident_name
                FROM review r
                JOIN resident u ON r.resident_id = u.resident_id
                WHERE r.activity_group_name = ?

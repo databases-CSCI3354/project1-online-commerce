@@ -1,12 +1,12 @@
 from flask import Blueprint, render_template, request
-
+from flask_login import current_user
 from app.services.activity_groups import ActivityGroupsService
 
-main_bp = Blueprint("main", __name__)
+main_bp = Blueprint('main', __name__)
 
 
-@main_bp.route("/")
-def index() -> str:
+@main_bp.route('/')
+def index():
     """Main landing page with optional category search."""
     svc = ActivityGroupsService()
     q = (request.args.get("category") or "").strip()

@@ -6,7 +6,7 @@ from flask_login import current_user, login_required, login_user, logout_user
 
 from app.models.users import User
 
-auth_bp = Blueprint("auth", __name__)
+auth_bp = Blueprint('auth', __name__)
 bcrypt = Bcrypt()
 
 
@@ -17,63 +17,53 @@ def get_db():
     return g.db
 
 
-@auth_bp.route("/login", methods=["GET", "POST"])
-def login():
-    """Handle user login"""
-    if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
-        print(f"[DEBUG] Login attempt: username={username}, password={password}")
-
-        user = User.validate(username, password)
-        print(f"[DEBUG] User.validate returned: {user}")
-        if user:
-            login_user(user)
-            return redirect(url_for("main.index"))
-
-        flash("Invalid username or password")
-
-    return render_template("auth/login.html")
-
-
-@auth_bp.route("/register", methods=["GET", "POST"])
+@auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
-        resident_id = request.form.get("resident_id")
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        error = None
 
-        if not username or not password or not resident_id:
-            flash("All fields are required", "error")
-            return render_template("auth/register.html")
+        if not username:
+            error = 'Username is required.'
+        elif not password:
+            error = 'Password is required.'
 
-        db = get_db()
-        try:
-            # Check if customer exists
-            resident = db.execute(
-                "SELECT resident_id FROM resident WHERE resident_id = ?", [resident_id]
-            ).fetchone()
-
-            if not resident:
-                flash("Invalid Resident ID", "error")
-                return render_template("auth/register.html")
-
-            # Create new user
-            hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
-            db.execute(
-                "INSERT INTO resident (resident_id, username, hashed_password) VALUES (?, ?, ?)",
-                [resident_id, username, hashed_password],
-            )
-            db.commit()
-
-            flash("Registration successful! Please log in.", "success")
+        if error is None:
+            try:
+                user_id = User.create(username, password)
+                if user_id is None:
+                    error = f"User {username} is already registered."
+                else:
+                    return redirect(url_for("auth.login"))
+            except Exception as e:
+                error = f"An error occurred: {str(e)}"
+        else:
             return redirect(url_for("auth.login"))
 
-        except sqlite3.IntegrityError:
-            flash("Username already exists or Resident ID already registered", "error")
-            return render_template("auth/register.html")
+        flash(error)
 
-    return render_template("auth/register.html")
+    return render_template('auth/register.html')
+
+
+@auth_bp.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        error = None
+        user = User.validate(username, password)
+
+        if user is None:
+            error = 'Incorrect username or password.'
+
+        if error is None:
+            login_user(user)
+            return redirect(url_for('main.index'))
+
+        flash(error)
+
+    return render_template('auth/login.html')
 
 
 @auth_bp.route("/profile")
@@ -87,8 +77,8 @@ def profile():
     return render_template("auth/profile.html", customer=customer)
 
 
-@auth_bp.route("/logout")
+@auth_bp.route('/logout')
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for("main.index"))
+    return redirect(url_for('main.index'))

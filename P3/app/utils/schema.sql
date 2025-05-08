@@ -7,85 +7,91 @@ DROP TABLE IF EXISTS event;
 DROP TABLE IF EXISTS location;
 DROP TABLE IF EXISTS activity_group;
 DROP TABLE IF EXISTS resident;
+DROP TABLE IF EXISTS waitlist;
+DROP TABLE IF EXISTS registrations;
 
 -- Table: resident
 CREATE TABLE resident (
-    resident_id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL,
+    resident_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE NOT NULL,
     email TEXT UNIQUE NOT NULL,
-    phone_number TEXT UNIQUE,
-    interests TEXT,
-    date_of_birth TEXT,
-    profile_image TEXT,
-    username TEXT UNIQUE,
-    hashed_password TEXT,
-    is_deleted INTEGER DEFAULT 0 -- Add this column
+    password_hash TEXT NOT NULL,
+    role TEXT NOT NULL CHECK (role IN ('user', 'admin')),
+    is_deleted BOOLEAN NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Table: activity_group
 CREATE TABLE activity_group (
     name TEXT PRIMARY KEY,
-    category TEXT,
-    description TEXT,
+    category TEXT NOT NULL,
+    description TEXT NOT NULL,
     founding_date TEXT,
     website TEXT,
-    email TEXT,
+    email TEXT NOT NULL,
     phone_number TEXT,
-    social_media_links TEXT, -- stored as JSON string
-    is_active INTEGER DEFAULT 1,
+    social_media_links TEXT,
+    is_active BOOLEAN DEFAULT 1,
     total_members INTEGER DEFAULT 0,
-    event_frequency TEXT,
-    membership_fee INTEGER,
-    open_to_public INTEGER,
-    min_age INTEGER
+    event_frequency TEXT CHECK (event_frequency IN ('weekly', 'biweekly', 'monthly')),
+    membership_fee INTEGER DEFAULT 0,
+    open_to_public BOOLEAN DEFAULT 1,
+    min_age INTEGER DEFAULT 18,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Table: review
 CREATE TABLE review (
-    review_id INTEGER PRIMARY KEY,
+    review_id INTEGER PRIMARY KEY AUTOINCREMENT,
     resident_id INTEGER NOT NULL,
     activity_group_name TEXT NOT NULL,
-    content TEXT,
-    star_rating INTEGER CHECK (star_rating BETWEEN 1 AND 5),
-    review_date TEXT,
-    is_verified INTEGER DEFAULT 0,
+    content TEXT NOT NULL,
+    star_rating INTEGER NOT NULL CHECK (star_rating BETWEEN 1 AND 5),
+    review_date TEXT NOT NULL,
+    is_verified BOOLEAN NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (resident_id) REFERENCES resident(resident_id),
     FOREIGN KEY (activity_group_name) REFERENCES activity_group(name)
 );
 
 -- Table: location
 CREATE TABLE location (
-    location_id INTEGER PRIMARY KEY,
-    address TEXT,
-    city TEXT,
-    state TEXT,
-    zip_code TEXT
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    address TEXT NOT NULL,
+    city TEXT NOT NULL,
+    state TEXT NOT NULL,
+    zip_code TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Table: event
 CREATE TABLE event (
-    event_id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     activity_group_name TEXT NOT NULL,
-    date TEXT NOT NULL,
+    date DATE NOT NULL,
     location_id INTEGER,
     max_participants INTEGER,
-    cost INTEGER,
-    registration_required INTEGER,
-    registration_deadline TEXT,
+    cost DECIMAL(10,2) NOT NULL DEFAULT 0,
+    registration_required BOOLEAN NOT NULL DEFAULT 0,
+    registration_deadline DATE,
+    created_by INTEGER,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (activity_group_name) REFERENCES activity_group(name),
-    FOREIGN KEY (location_id) REFERENCES location(location_id)
+    FOREIGN KEY (location_id) REFERENCES location(id),
+    FOREIGN KEY (created_by) REFERENCES resident(resident_id)
 );
 
 -- Table: session
 CREATE TABLE session (
-    session_id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     activity_group_name TEXT NOT NULL,
-    event_id INTEGER,
-    date TEXT,
+    event_id INTEGER NOT NULL,
+    date DATE NOT NULL,
     attendance INTEGER,
     agenda TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (activity_group_name) REFERENCES activity_group(name),
-    FOREIGN KEY (event_id) REFERENCES event(event_id)
+    FOREIGN KEY (event_id) REFERENCES event(id)
 );
 
 -- Table: member (associative)
@@ -110,14 +116,15 @@ CREATE TABLE hosts (
 
 -- Table: prerequisite (associative, self-referencing)
 CREATE TABLE prerequisite (
-    event_id INTEGER,
-    prerequisite_event_id INTEGER,
-    minimum_performance INTEGER,
-    qualification_period INTEGER,
-    is_waiver_allowed INTEGER,
-    PRIMARY KEY (event_id, prerequisite_event_id),
-    FOREIGN KEY (event_id) REFERENCES event(event_id),
-    FOREIGN KEY (prerequisite_event_id) REFERENCES event(event_id),
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    event_id INTEGER NOT NULL,
+    prerequisite_event_id INTEGER NOT NULL,
+    minimum_performance INTEGER NOT NULL,
+    qualification_period INTEGER NOT NULL,
+    is_waiver_allowed BOOLEAN NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (event_id) REFERENCES event(id),
+    FOREIGN KEY (prerequisite_event_id) REFERENCES event(id),
     CHECK (event_id != prerequisite_event_id)
 );
 
@@ -126,9 +133,11 @@ CREATE TABLE registrations (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     event_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
-    registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (event_id) REFERENCES event(event_id),
-    FOREIGN KEY (user_id) REFERENCES resident(resident_id)
+    status TEXT NOT NULL DEFAULT 'registered' CHECK (status IN ('registered', 'cancelled', 'completed')),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (event_id) REFERENCES event(id),
+    FOREIGN KEY (user_id) REFERENCES resident(resident_id),
+    UNIQUE (event_id, user_id)
 );
 
 -- Table: waitlist
@@ -136,8 +145,8 @@ CREATE TABLE waitlist (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     event_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
-    status TEXT DEFAULT 'waiting', -- 'waiting', 'notified', 'confirmed'
-    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (event_id) REFERENCES event(event_id),
-    FOREIGN KEY (user_id) REFERENCES resident(resident_id)
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (event_id) REFERENCES event(id),
+    FOREIGN KEY (user_id) REFERENCES resident(resident_id),
+    UNIQUE (event_id, user_id)
 );
