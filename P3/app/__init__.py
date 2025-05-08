@@ -3,7 +3,8 @@ import secrets
 
 from flask import Flask
 from flask_login import LoginManager
-
+from dotenv import load_dotenv
+load_dotenv()
 from app.models.users import User
 from app.routes import init_app
 from app.routes.auth import auth_bp
