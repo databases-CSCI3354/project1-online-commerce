@@ -5,6 +5,8 @@
 ### Team Members and Roles
 
 - Jin Yang Chen: Development Engineer
+- Omer Yurekli: Testing & Development Engineeer
+- Salamun Nuhin: Testing & Development Engineer
 
 ## Quick Start
 
