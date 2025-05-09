@@ -49,7 +49,7 @@
 
                 <div>
                     <h2 class="text-2xl font-bold mb-4">Add New Prerequisite</h2>
-                    <form method="POST" action="" class="space-y-6 bg-white p-6 rounded-xl shadow">
+                    <form method="POST" action="{{ url_for('prerequisites.add_prerequisite', event_id=event.id) }}" class="space-y-6 bg-white p-6 rounded-xl shadow">
                         <div>
                             <label for="prereq_type" class="block font-semibold mb-1">Type of Prerequisite</label>
                             <select name="prereq_type" id="prereq_type" class="w-full border rounded-lg px-3 py-2">
@@ -63,7 +63,7 @@
                             <label for="prerequisite_event_id" class="block font-semibold mb-1">Required Event/Activity</label>
                             <select name="prerequisite_event_id" id="prerequisite_event_id" class="w-full border rounded-lg px-3 py-2">
                                 <option value="">Select an event...</option>
-                                {% for event in all_events %}
+                                {% for event in available_events %}
                                 <option value="{{ event.id }}">{{ event.activity_group_name }} ({{ event.date }})</option>
                                 {% endfor %}
                             </select>
