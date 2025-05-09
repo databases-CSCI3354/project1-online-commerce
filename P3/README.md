@@ -31,10 +31,10 @@ These enhancements improve both user experience and administrative efficiency.
 ---
 
 ## Test Accounts
-Admin - Username: admin, Password: admin123
-User - Username: testuser, Password: user123
-User - Username: testuser2, Password: user123
-User - Username: testuser3, Password: user123
+- Admin - Username: admin, Password: admin123
+- User - Username: testuser, Password: user123
+- User - Username: testuser2, Password: user123
+- User - Username: testuser3, Password: user123
 
 ---
 
