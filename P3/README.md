@@ -64,6 +64,10 @@ pip install -r requirements.txt
 ```bash
 cp .env.example .env
 ```
+5. Run the seed data
+```bash
+python seed.py
+```
 
 5. Run the Application
 ```bash
@@ -109,6 +113,76 @@ The E-R diagram below shows how users, events, groups, and registrations are rel
 - Events: id (PK), group_id (FK), title, date, location
 - Registrations: id (PK), user_id (FK), event_id (FK), status
 - Reviews (in development): id (PK), user_id (FK), group_id (FK), star_rating, comment
+- Prerequisites: id (PK), event_id (FK), prerequisite_event_id (FK), minimum_performance, qualification_period, is_waiver_allowed, created_at 
+
+### Updated Entities and Attributes Not in ER Diagram
+- Waitlist: id (PK), event_id (FK), user_id (FK), created_at
+
+## 📘 Entity Relationships from Schema
+
+### Resident ↔ Review
+- **Type**: One-to-Many
+- **Explanation**: One resident can write many reviews, but each review is written by only one resident.
+
+### Resident ↔ Member (ActivityGroup)
+- **Type**: Many-to-Many
+- **Explanation**: Residents can be members of multiple groups, and each group can have multiple residents.
+- **Implemented via**: `member(resident_id, activity_group_name)`
+
+### Resident ↔ Registrations
+- **Type**: One-to-Many
+- **Explanation**: One resident can register for many events. Each registration belongs to one resident.
+
+### Resident ↔ Waitlist
+- **Type**: One-to-Many
+- **Explanation**: One resident can be waitlisted for many events, and each waitlist entry is tied to one resident.
+
+### Resident ↔ Event (created_by)
+- **Type**: One-to-Many
+- **Explanation**: A resident can create multiple events; each event has one creator (`created_by` foreign key).
+
+---
+
+### ActivityGroup ↔ Review
+- **Type**: One-to-Many
+- **Explanation**: One group can have many reviews, but each review belongs to one group.
+
+### ActivityGroup ↔ Event
+- **Type**: One-to-Many
+- **Explanation**: A group can host many events. Each event belongs to a single group.
+
+### ActivityGroup ↔ Session
+- **Type**: One-to-Many
+- **Explanation**: A group can have many sessions; each session is hosted by one group.
+
+### ActivityGroup ↔ Member (Resident)
+- **Type**: Many-to-Many
+- **Explanation**: Same as above. Many groups have many members, via the `member` table.
+
+---
+
+### Event ↔ Location
+- **Type**: Many-to-One
+- **Explanation**: Many events can take place at the same location. Each event has one location.
+
+### Event ↔ Session
+- **Type**: One-to-Many
+- **Explanation**: Each event can have multiple sessions associated with it.
+
+### Event ↔ Registrations
+- **Type**: One-to-Many
+- **Explanation**: One event can have many registration records.
+
+### Event ↔ Waitlist
+- **Type**: One-to-Many
+- **Explanation**: One event can have many users on the waitlist.
+
+### Event ↔ Prerequisite
+- **Type**: Many-to-Many (self-referencing)
+- **Explanation**: One event can have multiple prerequisites and be a prerequisite for others.
+- **Implemented via**: `prerequisite(event_id, prerequisite_event_id)`
+
+
 
 ### Design Considerations
 - Users may join multiple groups
@@ -132,6 +206,7 @@ The E-R diagram below shows how users, events, groups, and registrations are rel
 ## Known Limitations
 
 - Partial session management implementation
+- Prerequisite management for users manually
 
 ---
 
@@ -140,6 +215,8 @@ The E-R diagram below shows how users, events, groups, and registrations are rel
 - Early ER design decisions reduce future complexity
 - Proper use of development tools improves project quality
 - Separation of concerns in routes and services aids scalability
+- Naming conventions for tables need further improvements
+- Maybe just use cookies instead of creating sessions
 
 ---
 
