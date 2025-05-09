@@ -99,6 +99,10 @@ tests/
 
 ## E-R Diagram and Schema Summary
 
+The E-R diagram below shows how users, events, groups, and registrations are related.
+
+![E-R Diagram](./er_diagram.png)
+
 ### Key Entities and Attributes
 - Users: id (PK), username, email, hashed_password
 - Groups: id (PK), name, description, category, cost
