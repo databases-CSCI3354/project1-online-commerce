@@ -14,7 +14,7 @@ Key capabilities:
 
 ---
 
-## Recent Feature Additions
+## Recent Feature Additions (Added After the Presentation)
 
 The application now includes several important updates:
 
