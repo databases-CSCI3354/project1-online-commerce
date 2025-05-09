@@ -1,6 +1,6 @@
 # Connecting Boston: Local Activity Group Web App
 
-## 📘 Overview
+## Overview
 
 This project delivers a lightweight, real-world web application that helps Boston residents find and participate in local activity groups. It solves the problem of scattered or inaccessible group listings by offering a centralized, intuitive platform where users can join activities, register for events, and leave feedback.
 
@@ -14,125 +14,128 @@ Key capabilities:
 
 ---
 
-## 📊 Recent Feature Additions
+## Recent Feature Additions
 
-Following the latest commits, the application has been extended to support several major features:
+The application now includes several important updates:
 
-- ✅ **Admin Dashboard**: A dedicated view for admins to manage events and oversee user activity.
-- 👤 **User Profiles**: Each user now has an associated profile for personalization and data management.
-- 🔄 **Prerequisite Tracking**: Events can now specify required prerequisite events.
-- 🕒 **Waitlist Functionality**: Users can be placed on a waitlist when events are full.
-- 📥 **Registration System**: Users can now register for events directly via the site interface.
-- 👀 **User and Admin Views**: The interface dynamically changes based on user role, separating admin and participant capabilities.
-- 🔔 **User Notifications**: The app now supports sending notifications related to registration and waitlist status.
+- Admin dashboard for managing events and overseeing platform activity
+- User profiles for personal information and participation tracking
+- Prerequisite event tracking for advanced scheduling logic
+- Waitlist system with automatic notifications for full events
+- Full event registration functionality within the platform
+- Distinct user and admin views based on role permissions
+- Notification system for registration status and waitlist movement
 
-These features significantly enhance user experience, data flow, and platform scalability.
-
----
-
-## 👥 Team Members and Roles
-
-- **Jin Yang Chen** – Development Engineer
-- **Omer Yurekli** – Backend Testing & Development Engineer
-- **Salamun Nuhin** – Testing & Development Engineer
-- **Omar Tall** – General Developer
-- **Arona Gaye** – General Developer
-- **Abraham Chang** – Documentation
+These enhancements improve both user experience and administrative efficiency.
 
 ---
 
-## 🚀 Quick Start: Deployment Instructions
+## Team Members and Roles
 
-### 1. Clone the Repository
+- Jin Yang Chen – Development Engineer
+- Omer Yurekli – Backend Testing & Development Engineer
+- Salamun Nuhin – Testing & Development Engineer
+- Omar Tall – General Developer
+- Arona Gaye – General Developer
+- Abraham Chang – Documentation
+
+---
+
+## Quick Start: Deployment Instructions
+
+1. Clone the Repository
 ```bash
 git clone https://github.com/databases-CSCI3354/project1-online-commerce.git
 cd project1-online-commerce/P3
 ```
 
-### 2. Create and Activate a Python Virtual Environment
+2. Create and Activate a Python Virtual Environment
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate  # for Linux/macOS
 ```
 
-### 3. Install Dependencies
+3. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Environment Variables
+4. Set Up Environment Variables
 ```bash
 cp .env.example .env
 ```
 
-### 5. Run the Application
+5. Run the Application
 ```bash
 flask run
 ```
 
 ---
 
-## 🧪 Testing
+## Testing
 
-We use `pytest` for all unit and integration tests.
-Run:
+The application uses `pytest` for unit and integration testing.
+
+To run all tests:
 ```bash
 python -m pytest
 ```
 
-Linting:
+For linting:
 ```bash
 make lint
 ```
 
-Test layout:
+Test directory structure:
 ```
 tests/
-├── routes/            # HTTP route tests
-├── services/          # Logic-level tests
+├── routes/
+├── services/
 ├── integration_test.py
 └── conftest.py
 ```
 
 ---
 
-## 🗂️ E-R Diagram and Schema Summary
+## E-R Diagram and Schema Summary
 
-### Entities and Attributes
-- **Users**: `id (PK)`, `username`, `email`, `hashed_password`
-- **Groups**: `id (PK)`, `name`, `description`, `category`, `cost`
-- **Events**: `id (PK)`, `group_id (FK)`, `title`, `date`, `location`
-- **Registrations**: `id (PK)`, `user_id (FK)`, `event_id (FK)`, `status`
-- **Reviews** (in dev): `id (PK)`, `user_id (FK)`, `group_id (FK)`, `star_rating`, `comment`
+### Key Entities and Attributes
+- Users: id (PK), username, email, hashed_password
+- Groups: id (PK), name, description, category, cost
+- Events: id (PK), group_id (FK), title, date, location
+- Registrations: id (PK), user_id (FK), event_id (FK), status
+- Reviews (in development): id (PK), user_id (FK), group_id (FK), star_rating, comment
 
-### Design Notes:
-- One user can join multiple groups
-- Events can have sessions and prerequisites
-- Form-based UI enables DB interaction
-- Authenticated users can only modify their own data
-
----
-
-## ✨ Features
-
-- 🔐 Secure login system using Flask-Login and Flask-Bcrypt
-- 🧠 MVC design and reusable route logic
-- 💬 Flash messaging and form validation for UX
-- 🔁 Role-based access and cookie session handling
-- 🧪 Strong test coverage and automated linting
+### Design Considerations
+- Users may join multiple groups
+- Events may have prerequisites
+- Secure and restricted access controls
+- Updates handled through a form-based UI
 
 ---
 
-## ⚠️ Not Fully Implemented Yet
-- Session handling (partial)
+## Features
+
+- Secure user login and password encryption
+- Clean separation of logic with MVC structure
+- Form validation and responsive feedback messages
+- Role-based access controls
+- Notification system for users
+- Automated testing and linting
 
 ---
 
-## 📚 Lessons Learned
+## Known Limitations
 
-- Securing authentication while keeping the app minimal is tricky
-- Early ER design simplifies future schema expansions
-- Linting and automation tools streamlined development and debugging
+- Partial session management implementation
+
+---
+
+## Lessons Learned
+
+- Early ER design decisions reduce future complexity
+- Proper use of development tools improves project quality
+- Separation of concerns in routes and services aids scalability
 
 ---
 
